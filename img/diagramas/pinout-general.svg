@@ -1,0 +1,46 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="680" viewBox="0 0 1200 680">
+  <rect width="1200" height="680" fill="#0d1117"/>
+  <text x="600" y="52" fill="#f0f6fc" font-family="Arial, sans-serif" font-size="34" text-anchor="middle" font-weight="700">BWifiKill ESP32 V4.0 - Pinout general</text>
+  <text x="600" y="86" fill="#8b949e" font-family="Arial, sans-serif" font-size="18" text-anchor="middle">OLED I2C, botones y dos modulos nRF24L01+ sobre el mismo bus SPI</text>
+
+  <rect x="445" y="150" width="310" height="360" rx="22" fill="#161b22" stroke="#58a6ff" stroke-width="4"/>
+  <text x="600" y="195" fill="#58a6ff" font-family="Arial, sans-serif" font-size="30" text-anchor="middle" font-weight="700">ESP32 DevKit</text>
+  <text x="600" y="236" fill="#f0f6fc" font-family="Consolas, monospace" font-size="22" text-anchor="middle">SDA 21 / SCL 22</text>
+  <text x="600" y="272" fill="#f0f6fc" font-family="Consolas, monospace" font-size="22" text-anchor="middle">SPI 18 / 19 / 23</text>
+  <text x="600" y="308" fill="#f0f6fc" font-family="Consolas, monospace" font-size="22" text-anchor="middle">NRF1 CE 5 / CSN 17</text>
+  <text x="600" y="344" fill="#f0f6fc" font-family="Consolas, monospace" font-size="22" text-anchor="middle">NRF2 CE 16 / CSN 4</text>
+  <text x="600" y="392" fill="#f0f6fc" font-family="Consolas, monospace" font-size="20" text-anchor="middle">UP 26  DOWN 33  OK 32</text>
+  <text x="600" y="426" fill="#f0f6fc" font-family="Consolas, monospace" font-size="20" text-anchor="middle">BACK 25  AUX 27</text>
+  <text x="600" y="472" fill="#ffdf5d" font-family="Arial, sans-serif" font-size="18" text-anchor="middle">Todos los GND deben estar unidos</text>
+
+  <rect x="70" y="140" width="270" height="140" rx="18" fill="#161b22" stroke="#3fb950" stroke-width="3"/>
+  <text x="205" y="184" fill="#3fb950" font-family="Arial, sans-serif" font-size="26" text-anchor="middle" font-weight="700">OLED SSD1306</text>
+  <text x="205" y="222" fill="#f0f6fc" font-family="Consolas, monospace" font-size="21" text-anchor="middle">SDA -> GPIO 21</text>
+  <text x="205" y="254" fill="#f0f6fc" font-family="Consolas, monospace" font-size="21" text-anchor="middle">SCL -> GPIO 22</text>
+
+  <rect x="70" y="390" width="270" height="170" rx="18" fill="#161b22" stroke="#d2a8ff" stroke-width="3"/>
+  <text x="205" y="434" fill="#d2a8ff" font-family="Arial, sans-serif" font-size="26" text-anchor="middle" font-weight="700">Botones</text>
+  <text x="205" y="472" fill="#f0f6fc" font-family="Consolas, monospace" font-size="20" text-anchor="middle">26 33 32 25 27</text>
+  <text x="205" y="506" fill="#f0f6fc" font-family="Arial, sans-serif" font-size="18" text-anchor="middle">Cada boton va a GND</text>
+  <text x="205" y="534" fill="#8b949e" font-family="Arial, sans-serif" font-size="16" text-anchor="middle">INPUT_PULLUP interno</text>
+
+  <rect x="860" y="120" width="280" height="180" rx="18" fill="#161b22" stroke="#ff7b72" stroke-width="3"/>
+  <text x="1000" y="162" fill="#ff7b72" font-family="Arial, sans-serif" font-size="26" text-anchor="middle" font-weight="700">nRF24 #1</text>
+  <text x="1000" y="204" fill="#f0f6fc" font-family="Consolas, monospace" font-size="20" text-anchor="middle">CE -> GPIO 5</text>
+  <text x="1000" y="236" fill="#f0f6fc" font-family="Consolas, monospace" font-size="20" text-anchor="middle">CSN -> GPIO 17</text>
+  <text x="1000" y="268" fill="#8b949e" font-family="Arial, sans-serif" font-size="16" text-anchor="middle">3V3 only + capacitor</text>
+
+  <rect x="860" y="380" width="280" height="180" rx="18" fill="#161b22" stroke="#ffa657" stroke-width="3"/>
+  <text x="1000" y="422" fill="#ffa657" font-family="Arial, sans-serif" font-size="26" text-anchor="middle" font-weight="700">nRF24 #2</text>
+  <text x="1000" y="464" fill="#f0f6fc" font-family="Consolas, monospace" font-size="20" text-anchor="middle">CE -> GPIO 16</text>
+  <text x="1000" y="496" fill="#f0f6fc" font-family="Consolas, monospace" font-size="20" text-anchor="middle">CSN -> GPIO 4</text>
+  <text x="1000" y="528" fill="#8b949e" font-family="Arial, sans-serif" font-size="16" text-anchor="middle">SCK 18 / MISO 19 / MOSI 23</text>
+
+  <line x1="340" y1="210" x2="445" y2="225" stroke="#3fb950" stroke-width="4"/>
+  <line x1="340" y1="470" x2="445" y2="392" stroke="#d2a8ff" stroke-width="4"/>
+  <line x1="755" y1="260" x2="860" y2="210" stroke="#ff7b72" stroke-width="4"/>
+  <line x1="755" y1="370" x2="860" y2="470" stroke="#ffa657" stroke-width="4"/>
+
+  <rect x="245" y="600" width="710" height="44" rx="12" fill="#21262d" stroke="#30363d"/>
+  <text x="600" y="629" fill="#f0f6fc" font-family="Arial, sans-serif" font-size="19" text-anchor="middle">Recomendacion: capacitor 10 uF - 100 uF entre VCC y GND de cada nRF24</text>
+</svg>

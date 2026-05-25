@@ -1,0 +1,17 @@
+{
+  "name": "BWifiKill ESP32 V4.0",
+  "version": "4.0.0",
+  "home_page": "https://github.com/pepeangell5/BWifiKill-ESP32-V4.0",
+  "new_install_prompt_erase": true,
+  "builds": [
+    {
+      "chipFamily": "ESP32",
+      "parts": [
+        {
+          "path": "binarios/BWifiKill-ESP32-V4.0-full.bin",
+          "offset": 0
+        }
+      ]
+    }
+  ]
+}
