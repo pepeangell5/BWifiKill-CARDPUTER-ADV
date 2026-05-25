@@ -7,6 +7,11 @@
 ![RF](https://img.shields.io/badge/RF-nRF24L01-red)
 ![License](https://img.shields.io/badge/license-MIT-black)
 
+[![Web Flasher](https://img.shields.io/badge/Web%20Flasher-Instalar%20V4.0-00ff66?style=for-the-badge)](https://pepeangell5.github.io/BWifiKill-ESP32-V4.0/)
+[![GitHub](https://img.shields.io/badge/GitHub-pepeangell5-181717?style=for-the-badge&logo=github)](https://github.com/pepeangell5)
+[![Instagram](https://img.shields.io/badge/Instagram-pepeangelll-E4405F?style=for-the-badge&logo=instagram&logoColor=white)](https://www.instagram.com/pepeangelll)
+[![Facebook](https://img.shields.io/badge/Facebook-esp32tools-1877F2?style=for-the-badge&logo=facebook&logoColor=white)](https://www.facebook.com/esp32tools)
+
 BWifiKill ESP32 V4.0 es una suite portatil para laboratorio, aprendizaje y auditoria autorizada de redes WiFi, Bluetooth y actividad RF en 2.4 GHz. Esta version reorganiza el firmware por categorias, mejora la interfaz OLED, agrega herramientas pasivas nuevas y deja el proyecto listo para instalar por Web Flasher o PlatformIO.
 
 > Uso responsable: algunas funciones estan pensadas solo para laboratorio controlado. No uses este firmware contra redes, dispositivos o personas sin permiso explicito.
@@ -277,7 +282,7 @@ Estas funciones existen para pruebas controladas y educacion. No deben ejecutars
 ### Metodo 1: Web Flasher
 
 1. Abre el instalador web desde Chrome o Edge:
-   `https://pepeangell5.github.io/BWifiKill-ESP32-V4.0/`
+   [Abrir Web Flasher BWifiKill V4.0](https://pepeangell5.github.io/BWifiKill-ESP32-V4.0/)
 2. Conecta el ESP32 por USB.
 3. Presiona `Instalar BWifiKill V4.0`.
 4. Selecciona el puerto serial.
