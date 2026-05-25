@@ -3,273 +3,370 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>BWifiKill ESP32 V4.0 - Web Flasher</title>
-  <meta name="description" content="Instalador web para BWifiKill ESP32 V4.0">
+  <title>BWifiKill V4.0 | Web Flasher</title>
+  <meta name="description" content="Web flasher for BWifiKill ESP32 V4.0">
   <script type="module" src="https://unpkg.com/esp-web-tools@10/dist/web/install-button.js?module"></script>
   <style>
     :root {
-      color-scheme: dark;
-      --bg: #090d12;
-      --panel: #111821;
-      --panel-2: #17202b;
-      --text: #edf5ff;
-      --muted: #9ba9b8;
-      --line: #263545;
-      --accent: #22d3ee;
-      --accent-2: #a3e635;
-      --danger: #fb7185;
+      --glow: #00ff66;
+      --glow-soft: rgba(0, 255, 102, 0.28);
+      --bg: #000;
+      --panel: rgba(0, 12, 4, 0.9);
+      --text: #d8ffe6;
+      --muted: #89c79d;
+      --danger: #ff6666;
     }
 
     * {
       box-sizing: border-box;
     }
 
+    html,
     body {
-      min-height: 100vh;
+      min-height: 100%;
+    }
+
+    body {
       margin: 0;
-      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-      background:
-        radial-gradient(circle at 20% 10%, rgba(34, 211, 238, 0.18), transparent 26rem),
-        radial-gradient(circle at 80% 20%, rgba(163, 230, 53, 0.12), transparent 22rem),
-        linear-gradient(180deg, #090d12 0%, #0d1117 100%);
-      color: var(--text);
-    }
-
-    main {
-      width: min(980px, calc(100% - 32px));
-      margin: 0 auto;
-      padding: 48px 0;
-    }
-
-    .hero {
-      display: grid;
-      grid-template-columns: 1.1fr 0.9fr;
-      gap: 24px;
-      align-items: stretch;
-    }
-
-    .card {
-      border: 1px solid var(--line);
-      background: rgba(17, 24, 33, 0.88);
-      border-radius: 8px;
-      box-shadow: 0 24px 80px rgba(0, 0, 0, 0.32);
-    }
-
-    .intro {
-      padding: 34px;
-    }
-
-    .eyebrow {
-      display: inline-flex;
+      min-height: 100vh;
+      display: flex;
       align-items: center;
-      gap: 8px;
-      color: #051016;
-      background: var(--accent);
-      border-radius: 999px;
-      padding: 6px 10px;
-      font-size: 12px;
+      justify-content: center;
+      padding: 28px 14px;
+      overflow-x: hidden;
+      background: var(--bg);
+      color: var(--glow);
+      font-family: "Courier New", Consolas, monospace;
+    }
+
+    canvas {
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      opacity: 0.42;
+    }
+
+    .shell {
+      position: relative;
+      z-index: 1;
+      width: min(560px, 100%);
+      border: 1px solid var(--glow);
+      background: var(--panel);
+      box-shadow: 0 0 32px var(--glow-soft), inset 0 0 24px rgba(0, 255, 102, 0.08);
+      padding: 28px;
+      text-align: center;
+    }
+
+    .topbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 18px;
+    }
+
+    .terminal-tag {
+      display: inline-block;
+      background: var(--glow);
+      color: #001306;
+      padding: 4px 10px;
+      font-size: 13px;
       font-weight: 800;
-      letter-spacing: 0.08em;
+      letter-spacing: 0.12em;
       text-transform: uppercase;
     }
 
-    h1 {
-      margin: 18px 0 12px;
-      font-size: clamp(34px, 6vw, 62px);
-      line-height: 0.95;
-      letter-spacing: 0;
-    }
-
-    p {
-      color: var(--muted);
-      font-size: 16px;
-      line-height: 1.65;
-      margin: 0;
-    }
-
-    .installer {
-      padding: 26px;
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-      gap: 22px;
-      background:
-        linear-gradient(135deg, rgba(34, 211, 238, 0.08), transparent 45%),
-        rgba(17, 24, 33, 0.92);
-    }
-
-    .chip {
-      display: inline-flex;
-      align-items: center;
-      width: fit-content;
-      gap: 8px;
-      border: 1px solid var(--line);
-      border-radius: 999px;
+    .lang-toggle {
+      border: 1px solid var(--glow);
+      background: transparent;
+      color: var(--glow);
       padding: 7px 10px;
-      color: var(--muted);
-      font-size: 13px;
+      font-family: inherit;
+      font-weight: 800;
+      cursor: pointer;
+      box-shadow: 0 0 12px rgba(0, 255, 102, 0.12);
     }
 
-    .status-dot {
-      width: 8px;
-      height: 8px;
-      border-radius: 50%;
-      background: var(--accent-2);
-      box-shadow: 0 0 18px var(--accent-2);
+    .lang-toggle:hover {
+      background: var(--glow);
+      color: #001306;
+    }
+
+    h1 {
+      margin: 8px 0 8px;
+      font-size: clamp(38px, 9vw, 62px);
+      line-height: 0.95;
+      letter-spacing: 5px;
+      color: var(--glow);
+      text-shadow: 0 0 12px var(--glow);
+    }
+
+    .version {
+      color: #fff;
+      font-size: 14px;
+      letter-spacing: 0.25em;
+      opacity: 0.8;
+      margin-bottom: 22px;
+    }
+
+    .copy {
+      color: var(--text);
+      font-size: 15px;
+      line-height: 1.55;
+      margin: 0 auto 22px;
+      max-width: 460px;
+    }
+
+    .warning {
+      border: 1px dashed var(--glow);
+      color: var(--text);
+      background: rgba(0, 255, 102, 0.045);
+      padding: 14px;
+      margin: 22px 0;
+      text-align: left;
+      line-height: 1.55;
+      font-size: 14px;
+    }
+
+    .warning b {
+      color: #fff;
     }
 
     esp-web-install-button {
+      display: block;
       width: 100%;
+      margin-top: 18px;
     }
 
     button[slot="activate"] {
       width: 100%;
-      border: 0;
-      border-radius: 8px;
-      padding: 16px 18px;
-      color: #031014;
-      background: linear-gradient(135deg, var(--accent), var(--accent-2));
-      font-size: 17px;
-      font-weight: 850;
+      border: none;
+      background: var(--glow);
+      color: #001306;
+      padding: 18px 16px;
+      font-family: inherit;
+      font-size: 18px;
+      font-weight: 900;
       cursor: pointer;
-      transition: transform 160ms ease, filter 160ms ease;
+      letter-spacing: 0.08em;
+      transition: 0.2s ease;
+      box-shadow: 0 0 20px rgba(0, 255, 102, 0.24);
     }
 
     button[slot="activate"]:hover {
-      transform: translateY(-1px);
-      filter: brightness(1.08);
+      background: #fff;
+      box-shadow: 0 0 34px var(--glow);
     }
 
-    .steps {
+    .meta {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
-      gap: 12px;
-      margin-top: 24px;
+      gap: 8px;
+      margin: 18px 0;
     }
 
-    .step {
-      padding: 16px;
-      border: 1px solid var(--line);
-      background: rgba(23, 32, 43, 0.75);
-      border-radius: 8px;
+    .meta span {
+      border: 1px solid rgba(0, 255, 102, 0.45);
+      color: var(--muted);
+      padding: 8px 6px;
+      font-size: 12px;
     }
 
-    .step strong {
+    .repo-button {
       display: block;
-      margin-bottom: 6px;
-      color: var(--text);
+      width: 100%;
+      margin-top: 18px;
+      border: 1px solid var(--glow);
+      color: var(--glow);
+      text-decoration: none;
+      padding: 14px 12px;
+      font-weight: 900;
+      letter-spacing: 0.08em;
+      transition: 0.2s ease;
     }
 
-    .warning {
-      margin-top: 24px;
-      padding: 16px;
-      border: 1px solid rgba(251, 113, 133, 0.45);
-      background: rgba(251, 113, 133, 0.08);
-      border-radius: 8px;
-      color: #fecdd3;
-      line-height: 1.55;
+    .repo-button:hover {
+      background: var(--glow);
+      color: #001306;
+      box-shadow: 0 0 24px var(--glow-soft);
     }
 
-    .links {
+    .social {
       display: flex;
+      justify-content: center;
       flex-wrap: wrap;
-      gap: 10px;
-      margin-top: 22px;
+      gap: 12px;
+      margin-top: 20px;
+      font-size: 13px;
     }
 
-    a {
-      color: var(--accent);
+    .social a {
+      color: var(--glow);
       text-decoration: none;
     }
 
-    .links a {
-      border: 1px solid var(--line);
-      border-radius: 999px;
-      padding: 8px 12px;
-      color: var(--text);
-      background: rgba(255, 255, 255, 0.03);
+    .social a:hover {
+      color: #fff;
+      text-decoration: underline;
     }
 
     footer {
-      margin-top: 28px;
-      color: var(--muted);
-      font-size: 13px;
-      text-align: center;
+      margin-top: 18px;
+      color: rgba(255, 255, 255, 0.62);
+      font-size: 12px;
+      line-height: 1.5;
     }
 
-    @media (max-width: 780px) {
-      main {
-        padding: 24px 0;
+    @media (max-width: 560px) {
+      body {
+        align-items: flex-start;
       }
 
-      .hero,
-      .steps {
-        grid-template-columns: 1fr;
-      }
-
-      .intro,
-      .installer {
+      .shell {
         padding: 22px;
+      }
+
+      .topbar {
+        align-items: flex-start;
+      }
+
+      h1 {
+        letter-spacing: 2px;
+      }
+
+      .meta {
+        grid-template-columns: 1fr;
       }
     }
   </style>
 </head>
 <body>
-  <main>
-    <section class="hero">
-      <div class="card intro">
-        <span class="eyebrow">ESP32 Web Flasher</span>
-        <h1>BWifiKill ESP32 V4.0</h1>
-        <p>
-          Instala el firmware completo directamente desde el navegador. Usa Chrome o Edge,
-          conecta el ESP32 por USB y selecciona el puerto serial cuando el navegador lo pida.
-        </p>
-        <div class="steps">
-          <div class="step">
-            <strong>1. Conecta</strong>
-            <p>Usa un cable USB de datos y cierra cualquier monitor serial abierto.</p>
-          </div>
-          <div class="step">
-            <strong>2. Instala</strong>
-            <p>Presiona el boton y elige tu ESP32 en la ventana del navegador.</p>
-          </div>
-          <div class="step">
-            <strong>3. Reinicia</strong>
-            <p>Al terminar, reinicia la placa y espera el splash de BWifiKill.</p>
-          </div>
-        </div>
-      </div>
+  <canvas id="matrix"></canvas>
 
-      <div class="card installer">
-        <div>
-          <span class="chip"><span class="status-dot"></span> Release local V4.0</span>
-          <h2>Instalador</h2>
-          <p>
-            El manifest usa el binario completo ubicado en
-            <code>binarios/BWifiKill-ESP32-V4.0-full.bin</code>.
-          </p>
-        </div>
+  <main class="shell">
+    <div class="topbar">
+      <span class="terminal-tag" data-i18n="terminal">TERMINAL V4.0</span>
+      <button class="lang-toggle" id="langToggle" type="button">EN</button>
+    </div>
 
-        <esp-web-install-button manifest="manifest.json">
-          <button slot="activate">Instalar BWifiKill V4.0</button>
-        </esp-web-install-button>
+    <h1>BWIFIKILL</h1>
+    <div class="version">ESP32 / NRF24 / OLED</div>
 
-        <div class="warning">
-          Si el puerto no aparece o la escritura falla, manten presionado BOOT mientras inicia el flasheo.
-          Usa esta herramienta solo en hardware propio.
-        </div>
-      </div>
-    </section>
+    <p class="copy" data-i18n="intro">
+      Instala BWifiKill ESP32 V4.0 directamente desde el navegador. Usa Chrome o Edge, conecta tu ESP32 por USB y selecciona el puerto serial.
+    </p>
 
-    <div class="links">
-      <a href="https://github.com/pepeangell5/BWifiKill-ESP32-V4.0" target="_blank" rel="noreferrer">GitHub</a>
+    <div class="meta" aria-label="Firmware details">
+      <span data-i18n="metaVersion">VERSION 4.0</span>
+      <span data-i18n="metaChip">CHIP ESP32</span>
+      <span data-i18n="metaBuild">FULL BIN</span>
+    </div>
+
+    <div class="warning">
+      <span data-i18n="line1">[!] CONECTA EL ESP32 VIA USB</span><br>
+      <span data-i18n="line2">[!] CIERRA VS CODE / MONITOR SERIE</span><br>
+      <span data-i18n="line3">[!] SI FALLA: MANTEN PRESIONADO <b>BOOT</b></span>
+    </div>
+
+    <esp-web-install-button manifest="manifest.json">
+      <button slot="activate" data-i18n="install">INSTALAR BWifiKill V4.0</button>
+    </esp-web-install-button>
+
+    <a class="repo-button" href="https://github.com/pepeangell5/BWifiKill-ESP32-V4.0" target="_blank" rel="noreferrer" data-i18n="repo">
+      REGRESAR AL REPOSITORIO
+    </a>
+
+    <div class="social">
       <a href="https://www.instagram.com/pepeangelll" target="_blank" rel="noreferrer">Instagram</a>
+      <a href="https://github.com/pepeangell5" target="_blank" rel="noreferrer">GitHub</a>
       <a href="https://www.facebook.com/esp32tools" target="_blank" rel="noreferrer">Facebook</a>
     </div>
 
-    <footer>
-      BWifiKill ESP32 V4.0 - Proyecto educativo para laboratorio y auditoria autorizada.
+    <footer data-i18n="footer">
+      Proyecto educativo para laboratorio y auditoria autorizada.
     </footer>
   </main>
+
+  <script>
+    const strings = {
+      es: {
+        terminal: "TERMINAL V4.0",
+        intro: "Instala BWifiKill ESP32 V4.0 directamente desde el navegador. Usa Chrome o Edge, conecta tu ESP32 por USB y selecciona el puerto serial.",
+        metaVersion: "VERSION 4.0",
+        metaChip: "CHIP ESP32",
+        metaBuild: "FULL BIN",
+        line1: "[!] CONECTA EL ESP32 VIA USB",
+        line2: "[!] CIERRA VS CODE / MONITOR SERIE",
+        line3: "[!] SI FALLA: MANTEN PRESIONADO <b>BOOT</b>",
+        install: "INSTALAR BWifiKill V4.0",
+        repo: "REGRESAR AL REPOSITORIO",
+        footer: "Proyecto educativo para laboratorio y auditoria autorizada."
+      },
+      en: {
+        terminal: "TERMINAL V4.0",
+        intro: "Install BWifiKill ESP32 V4.0 directly from your browser. Use Chrome or Edge, connect your ESP32 through USB and select the serial port.",
+        metaVersion: "VERSION 4.0",
+        metaChip: "ESP32 CHIP",
+        metaBuild: "FULL BIN",
+        line1: "[!] CONNECT THE ESP32 VIA USB",
+        line2: "[!] CLOSE VS CODE / SERIAL MONITOR",
+        line3: "[!] IF IT FAILS: HOLD <b>BOOT</b>",
+        install: "INSTALL BWifiKill V4.0",
+        repo: "BACK TO REPOSITORY",
+        footer: "Educational project for lab use and authorized auditing."
+      }
+    };
+
+    let currentLang = "es";
+    const langToggle = document.getElementById("langToggle");
+
+    function setLanguage(lang) {
+      currentLang = lang;
+      document.documentElement.lang = lang;
+      document.querySelectorAll("[data-i18n]").forEach((node) => {
+        const key = node.getAttribute("data-i18n");
+        node.innerHTML = strings[lang][key];
+      });
+      langToggle.textContent = lang === "es" ? "EN" : "ES";
+    }
+
+    langToggle.addEventListener("click", () => {
+      setLanguage(currentLang === "es" ? "en" : "es");
+    });
+
+    const canvas = document.getElementById("matrix");
+    const ctx = canvas.getContext("2d");
+    const chars = "0123456789ABCDEF";
+    const fontSize = 16;
+    let drops = [];
+
+    function resizeMatrix() {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+      const columns = Math.floor(canvas.width / fontSize);
+      drops = Array(columns).fill(1);
+    }
+
+    function drawMatrix() {
+      ctx.fillStyle = "rgba(0, 0, 0, 0.05)";
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      ctx.fillStyle = "#00ff66";
+      ctx.font = fontSize + "px monospace";
+
+      for (let i = 0; i < drops.length; i++) {
+        const text = chars.charAt(Math.floor(Math.random() * chars.length));
+        ctx.fillText(text, i * fontSize, drops[i] * fontSize);
+        if (drops[i] * fontSize > canvas.height && Math.random() > 0.975) {
+          drops[i] = 0;
+        }
+        drops[i]++;
+      }
+    }
+
+    resizeMatrix();
+    setLanguage("es");
+    setInterval(drawMatrix, 40);
+    window.addEventListener("resize", resizeMatrix);
+  </script>
 </body>
 </html>
