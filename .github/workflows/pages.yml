@@ -32,7 +32,6 @@ jobs:
           cp binarios/BWifiKill-CARDPUTER-ADV-full.bin _site/binarios/
           cp binarios/bootloader.bin _site/binarios/
           cp binarios/partitions.bin _site/binarios/
-          cp binarios/boot_app0.bin _site/binarios/
           cp binarios/firmware.bin _site/binarios/
           cp binarios/README.md _site/binarios/
           cp binarios/checksums-sha256.txt _site/binarios/

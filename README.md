@@ -207,9 +207,28 @@ esptool.py --chip esp32s3 --baud 921600 write_flash \
   0x0 binarios/BWifiKill-CARDPUTER-ADV-full.bin
 ```
 
-Tambien se incluyen bootloader, particiones, `boot_app0` y aplicacion por
-separado. Consulta [binarios/README.md](binarios/README.md) para sus offsets y
-`binarios/checksums-sha256.txt` para verificar integridad.
+Tambien se conservan el bootloader, la tabla de particiones y la aplicacion
+como artefactos de referencia. Consulta [binarios/README.md](binarios/README.md)
+y `binarios/checksums-sha256.txt` para verificar integridad.
+
+### Instalacion desde M5Launcher y microSD
+
+Tambien puedes instalar BWifiKill sin computadora desde **M5Launcher
+Cardputer & ADV**:
+
+1. Copia `binarios/BWifiKill-CARDPUTER-ADV-full.bin` a una tarjeta microSD.
+2. Inserta la microSD en el Cardputer ADV.
+3. Inicia M5Launcher y abre el explorador de archivos de la tarjeta SD.
+4. Selecciona `BWifiKill-CARDPUTER-ADV-full.bin`.
+5. Pulsa **Burn**, confirma la escritura y espera a que finalice.
+6. Reinicia el Cardputer ADV para iniciar BWifiKill.
+
+> Debes elegir el archivo `-full.bin`. No selecciones `firmware.bin`,
+> `bootloader.bin` ni `partitions.bin` desde M5Launcher.
+
+<p align="center">
+  <img src="img/Cardputer/m5launcher.png" width="78%" alt="M5Launcher compatible con Cardputer y Cardputer ADV">
+</p>
 
 ## Compilacion
 
