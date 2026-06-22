@@ -200,6 +200,21 @@ El Web Flasher utiliza:
 binarios/BWifiKill-CARDPUTER-ADV-full.bin @ 0x0000
 ```
 
+### Instalacion directa desde M5Burner
+
+BWifiKill tambien esta disponible en el catalogo de **M5Burner**:
+
+1. Abre M5Burner y selecciona la categoria **Cardputer**.
+2. Busca exactamente `BWifiKill Cardputer ADV`.
+3. Selecciona la version disponible y pulsa **Download**.
+4. Conecta el Cardputer ADV al equipo mediante USB.
+5. Cuando termine la descarga, pulsa **Burn** y selecciona el puerto correcto.
+6. Espera a que M5Burner confirme la escritura y reinicia el dispositivo.
+
+<p align="center">
+  <img src="img/Cardputer/m5burner.png" width="86%" alt="BWifiKill Cardputer ADV disponible en M5Burner">
+</p>
+
 ### Instalacion manual
 
 ```bash
