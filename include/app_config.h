@@ -26,11 +26,23 @@ namespace AppConfig {
     constexpr uint8_t  SCREEN_H  = 64;
 
     // ---------- nRF24 ----------
+#ifdef BWK_CARDPUTER_ADV
+    // Shared with the microSD SPI bus. GPIO5/GPIO6 are external on ADV.
+    constexpr uint8_t  NRF_SPI_SCK  = 40;
+    constexpr uint8_t  NRF_SPI_MISO = 39;
+    constexpr uint8_t  NRF_SPI_MOSI = 14;
+    constexpr uint8_t  NRF1_CE      = 5;
+    constexpr uint8_t  NRF1_CSN     = 6;
+#else
+    constexpr uint8_t  NRF_SPI_SCK  = 18;
+    constexpr uint8_t  NRF_SPI_MISO = 19;
+    constexpr uint8_t  NRF_SPI_MOSI = 23;
     constexpr uint8_t  NRF1_CE   = 5;
     constexpr uint8_t  NRF1_CSN  = 17;
+#endif
     constexpr uint8_t  NRF2_CE   = 16;
     constexpr uint8_t  NRF2_CSN  = 4;
-    constexpr uint32_t NRF_SPI_HZ = 16000000;
+    constexpr uint32_t NRF_SPI_HZ = 10000000;
 
     // ---------- Firmware / Identidad ----------
     constexpr const char* FIRMWARE_NAME    = "BWifiKill";

@@ -3,8 +3,8 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>BWifiKill V4.0 | Web Flasher</title>
-  <meta name="description" content="Web flasher for BWifiKill ESP32 V4.0">
+  <title>BWifiKill Cardputer ADV | Web Flasher</title>
+  <meta name="description" content="Instalador web de BWifiKill para M5Stack Cardputer ADV">
   <script type="module" src="https://unpkg.com/esp-web-tools@10/dist/web/install-button.js?module"></script>
   <style>
     :root {
@@ -245,34 +245,34 @@
 
   <main class="shell">
     <div class="topbar">
-      <span class="terminal-tag" data-i18n="terminal">TERMINAL V4.0</span>
+      <span class="terminal-tag" data-i18n="terminal">CARDPUTER ADV</span>
       <button class="lang-toggle" id="langToggle" type="button">EN</button>
     </div>
 
     <h1>BWIFIKILL</h1>
-    <div class="version">ESP32 / NRF24 / OLED</div>
+    <div class="version">ESP32-S3 / NRF24 / TFT / KEYBOARD</div>
 
     <p class="copy" data-i18n="intro">
-      Instala BWifiKill ESP32 V4.0 directamente desde el navegador. Usa Chrome o Edge, conecta tu ESP32 por USB y selecciona el puerto serial.
+      Instala BWifiKill directamente en tu M5Stack Cardputer ADV. Usa Chrome o Edge, conecta el dispositivo por USB y selecciona su puerto serial.
     </p>
 
     <div class="meta" aria-label="Firmware details">
-      <span data-i18n="metaVersion">VERSION 4.0</span>
-      <span data-i18n="metaChip">CHIP ESP32</span>
+      <span data-i18n="metaVersion">VERSION 1.0</span>
+      <span data-i18n="metaChip">CHIP ESP32-S3</span>
       <span data-i18n="metaBuild">FULL BIN</span>
     </div>
 
     <div class="warning">
-      <span data-i18n="line1">[!] CONECTA EL ESP32 VIA USB</span><br>
+      <span data-i18n="line1">[!] CONECTA EL CARDPUTER ADV VIA USB</span><br>
       <span data-i18n="line2">[!] CIERRA VS CODE / MONITOR SERIE</span><br>
-      <span data-i18n="line3">[!] SI FALLA: MANTEN PRESIONADO <b>BOOT</b></span>
+      <span data-i18n="line3">[!] SI FALLA: USA EL BOTON <b>G0/BOOT</b></span>
     </div>
 
     <esp-web-install-button manifest="manifest.json">
-      <button slot="activate" data-i18n="install">INSTALAR BWifiKill V4.0</button>
+      <button slot="activate" data-i18n="install">INSTALAR EN CARDPUTER ADV</button>
     </esp-web-install-button>
 
-    <a class="repo-button" href="https://github.com/pepeangell5/BWifiKill-ESP32-V4.0" target="_blank" rel="noreferrer" data-i18n="repo">
+    <a class="repo-button" href="https://github.com/pepeangell5/BWifiKill-CARDPUTER-ADV" target="_blank" rel="noreferrer" data-i18n="repo">
       REGRESAR AL REPOSITORIO
     </a>
 
@@ -290,28 +290,28 @@
   <script>
     const strings = {
       es: {
-        terminal: "TERMINAL V4.0",
-        intro: "Instala BWifiKill ESP32 V4.0 directamente desde el navegador. Usa Chrome o Edge, conecta tu ESP32 por USB y selecciona el puerto serial.",
-        metaVersion: "VERSION 4.0",
-        metaChip: "CHIP ESP32",
+        terminal: "CARDPUTER ADV",
+        intro: "Instala BWifiKill directamente en tu M5Stack Cardputer ADV. Usa Chrome o Edge, conecta el dispositivo por USB y selecciona su puerto serial.",
+        metaVersion: "VERSION 1.0",
+        metaChip: "CHIP ESP32-S3",
         metaBuild: "FULL BIN",
-        line1: "[!] CONECTA EL ESP32 VIA USB",
+        line1: "[!] CONECTA EL CARDPUTER ADV VIA USB",
         line2: "[!] CIERRA VS CODE / MONITOR SERIE",
-        line3: "[!] SI FALLA: MANTEN PRESIONADO <b>BOOT</b>",
-        install: "INSTALAR BWifiKill V4.0",
+        line3: "[!] SI FALLA: USA EL BOTON <b>G0/BOOT</b>",
+        install: "INSTALAR EN CARDPUTER ADV",
         repo: "REGRESAR AL REPOSITORIO",
         footer: "Proyecto educativo para laboratorio y auditoria autorizada."
       },
       en: {
-        terminal: "TERMINAL V4.0",
-        intro: "Install BWifiKill ESP32 V4.0 directly from your browser. Use Chrome or Edge, connect your ESP32 through USB and select the serial port.",
-        metaVersion: "VERSION 4.0",
-        metaChip: "ESP32 CHIP",
+        terminal: "CARDPUTER ADV",
+        intro: "Install BWifiKill directly on your M5Stack Cardputer ADV. Use Chrome or Edge, connect the device through USB and select its serial port.",
+        metaVersion: "VERSION 1.0",
+        metaChip: "ESP32-S3 CHIP",
         metaBuild: "FULL BIN",
-        line1: "[!] CONNECT THE ESP32 VIA USB",
+        line1: "[!] CONNECT THE CARDPUTER ADV VIA USB",
         line2: "[!] CLOSE VS CODE / SERIAL MONITOR",
-        line3: "[!] IF IT FAILS: HOLD <b>BOOT</b>",
-        install: "INSTALL BWifiKill V4.0",
+        line3: "[!] IF IT FAILS: USE THE <b>G0/BOOT</b> BUTTON",
+        install: "INSTALL ON CARDPUTER ADV",
         repo: "BACK TO REPOSITORY",
         footer: "Educational project for lab use and authorized auditing."
       }

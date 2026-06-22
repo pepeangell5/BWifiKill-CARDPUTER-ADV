@@ -12,7 +12,9 @@ const uint8_t InputManager::PINS[BTN_COUNT] = {
 
 void InputManager::begin() {
     for (uint8_t i = 0; i < BTN_COUNT; i++) {
+#ifndef BWK_CARDPUTER_ADV
         pinMode(PINS[i], INPUT_PULLUP);
+#endif
         stableState[i]  = false;
         rawPrev[i]      = false;
         lastEdgeMs[i]   = 0;
@@ -24,6 +26,9 @@ void InputManager::begin() {
 }
 
 void InputManager::update() {
+#ifdef BWK_CARDPUTER_ADV
+    cardputerUpdate();
+#endif
     const uint32_t now = millis();
 
     for (uint8_t i = 0; i < BTN_COUNT; i++) {

@@ -5,7 +5,7 @@
 
 extern RF24 jam1;
 extern RF24 jam2;
-extern U8G2 u8g2;
+extern U8G2_SSD1306_128X64_NONAME_F_HW_I2C u8g2;
 
 #define BTN_UP 26
 #define BTN_DOWN 33
@@ -47,7 +47,9 @@ static void drawChannelGauge(int channel, bool active) {
 
 void jammerSetup() {
     jam1.begin();
+#ifndef BWK_CARDPUTER_ADV
     jam2.begin();
+#endif
 
     jam1.setAddressWidth(3);
     jam1.setRetries(0, 0);
@@ -55,18 +57,22 @@ void jammerSetup() {
     jam1.setAutoAck(false);
     jam1.stopListening();
 
+#ifndef BWK_CARDPUTER_ADV
     jam2.setAddressWidth(3);
     jam2.setRetries(0, 0);
     jam2.setDataRate(RF24_2MBPS);
     jam2.setAutoAck(false);
     jam2.stopListening();
+#endif
 }
 
 void jammerLoop() {
     if (digitalRead(BTN_BACK) == LOW) {
         isAttacking = false;
         jam1.stopConstCarrier();
+#ifndef BWK_CARDPUTER_ADV
         jam2.stopConstCarrier();
+#endif
         delay(200);
         return;
     }
@@ -100,7 +106,9 @@ void jammerLoop() {
             jam1.startConstCarrier(RF24_PA_MAX, (uint8_t)freq);
         } else {
             jam1.stopConstCarrier();
+#ifndef BWK_CARDPUTER_ADV
             jam2.stopConstCarrier();
+#endif
         }
         delay(400);
     }
@@ -110,10 +118,12 @@ void jammerLoop() {
     u8g2.sendBuffer();
 
     if (isAttacking) {
+#ifndef BWK_CARDPUTER_ADV
         int freq = (jamChannel * 5) + 2;
         jam2.setChannel(freq);
         for (int i = 0; i < 20; i++) {
             jam2.startWrite(&noise_payload, sizeof(noise_payload), true);
         }
+#endif
     }
 }

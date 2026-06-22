@@ -1,0 +1,52 @@
+name: Deploy Web Flasher
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Assemble flasher site
+        shell: bash
+        run: |
+          mkdir -p _site/binarios
+          cp index.html manifest.json _site/
+          cp binarios/BWifiKill-CARDPUTER-ADV-full.bin _site/binarios/
+          cp binarios/bootloader.bin _site/binarios/
+          cp binarios/partitions.bin _site/binarios/
+          cp binarios/boot_app0.bin _site/binarios/
+          cp binarios/firmware.bin _site/binarios/
+          cp binarios/README.md _site/binarios/
+          cp binarios/checksums-sha256.txt _site/binarios/
+
+      - name: Configure Pages
+        uses: actions/configure-pages@v5
+        with:
+          enablement: true
+
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: _site
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

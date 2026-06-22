@@ -75,8 +75,13 @@ int target_channel = 1;
 
 // Constructores literales — NO los reorganizamos para no romper el wiring
 U8G2_SSD1306_128X64_NONAME_F_HW_I2C u8g2(U8G2_R0, 22, 21);
-RF24 jam1(5, 17, 16000000);
-RF24 jam2(16, 4, 16000000);
+RF24 jam1(AppConfig::NRF1_CE, AppConfig::NRF1_CSN, AppConfig::NRF_SPI_HZ);
+#ifdef BWK_CARDPUTER_ADV
+// Compatibility handle: RF tools scan both bands sequentially on one radio.
+RF24 jam2(AppConfig::NRF1_CE, AppConfig::NRF1_CSN, AppConfig::NRF_SPI_HZ);
+#else
+RF24 jam2(AppConfig::NRF2_CE, AppConfig::NRF2_CSN, AppConfig::NRF_SPI_HZ);
+#endif
 
 AsyncWebServer asyncServer(AppConfig::WEB_PORT);
 
@@ -174,7 +179,9 @@ static const uint8_t APPS_COUNT = sizeof(apps) / sizeof(App);
 static void performBackCleanup() {
     esp_wifi_set_promiscuous(false);
     jam1.stopConstCarrier();
+#ifndef BWK_CARDPUTER_ADV
     jam2.stopConstCarrier();
+#endif
     if (menu_index == 16) asyncServer.end();
 
     bool keepWifiConnection = (menu_index == 0 && WiFi.status() == WL_CONNECTED);
@@ -202,9 +209,14 @@ void setup() {
         delay(35);
     }
 
-    // Inicialización temprana idéntica al original
+    // The Cardputer port waits for the external nRF24 wiring to be selected.
+#ifndef BWK_CARDPUTER_ADV
     jam1.begin();
     jam2.begin();
+#else
+    Serial.println("[BWK] Cardputer input: UP/DOWN, ENTER, BACKSPACE, SPACE");
+    Serial.println("[BWK] nRF24 disabled until external pin mapping is configured");
+#endif
 }
 
 void loop() {
@@ -248,6 +260,9 @@ void loop() {
                 menu_index = menuCategoryAppIndex(category_index, category_app_index);
                 runningApp = true;
             Host.launch(menu_index);   // llama enter() si está definido
+#ifdef BWK_CARDPUTER_ADV
+                cardputerWaitForKeysReleased();
+#endif
                 delay(300);                 // preserva debounce de entrada del original
             }
         }

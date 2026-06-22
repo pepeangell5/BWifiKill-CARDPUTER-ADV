@@ -1,14 +1,14 @@
 {
-  "name": "BWifiKill ESP32 V4.0",
-  "version": "4.0.0",
-  "home_page": "https://github.com/pepeangell5/BWifiKill-ESP32-V4.0",
+  "name": "BWifiKill Cardputer ADV",
+  "version": "1.0.0",
+  "home_page": "https://github.com/pepeangell5/BWifiKill-CARDPUTER-ADV",
   "new_install_prompt_erase": true,
   "builds": [
     {
-      "chipFamily": "ESP32",
+      "chipFamily": "ESP32-S3",
       "parts": [
         {
-          "path": "binarios/BWifiKill-ESP32-V4.0-full.bin",
+          "path": "binarios/BWifiKill-CARDPUTER-ADV-full.bin",
           "offset": 0
         }
       ]

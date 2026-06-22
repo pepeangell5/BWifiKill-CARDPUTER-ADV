@@ -221,16 +221,28 @@ void spectrographLoop() {
         int ch1 = i;
         int ch2 = i + 63;
 
+        int s1 = 0;
+        int s2 = 0;
+#ifdef BWK_CARDPUTER_ADV
+        jam1.setChannel(ch1);
+        delayMicroseconds(100);
+        for (int s = 0; s < 40; s++) {
+            if (jam1.testCarrier()) s1++;
+        }
+        jam1.setChannel(ch2);
+        delayMicroseconds(100);
+        for (int s = 0; s < 40; s++) {
+            if (jam1.testCarrier()) s2++;
+        }
+#else
         jam1.setChannel(ch1);
         jam2.setChannel(ch2);
         delayMicroseconds(100);
-
-        int s1 = 0;
-        int s2 = 0;
         for (int s = 0; s < 40; s++) {
             if (jam1.testCarrier()) s1++;
             if (jam2.testCarrier()) s2++;
         }
+#endif
 
         totalEnergy += s1;
         totalEnergy += s2;

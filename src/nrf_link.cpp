@@ -63,11 +63,19 @@ static uint32_t lastDrawMs = 0;
 static uint8_t frameTick = 0;
 
 static RF24& linkRadio() {
+#ifdef BWK_CARDPUTER_ADV
+    return jam1;
+#else
     return radioSelection == 0 ? jam1 : jam2;
+#endif
 }
 
 static RF24& idleRadio() {
+#ifdef BWK_CARDPUTER_ADV
+    return jam1;
+#else
     return radioSelection == 0 ? jam2 : jam1;
+#endif
 }
 
 static uint8_t selectedChannel() {
@@ -99,8 +107,10 @@ static void configureBaseRadio() {
     jam2.stopListening();
 
     RF24& radio = linkRadio();
+#ifndef BWK_CARDPUTER_ADV
     RF24& idle = idleRadio();
     idle.powerDown();
+#endif
 
     radioBeginOk = radio.begin();
     radio.powerDown();
@@ -367,7 +377,7 @@ void nrfLinkEnter() {
     screen = LINK_ROLE_SELECT;
     roleSelection = 0;
     fieldSelection = 0;
-    radioSelection = 1;
+    radioSelection = 0;
     channelSelection = 4;
     radioReady = false;
     frameTick = 0;
@@ -395,7 +405,9 @@ void nrfLinkLoop() {
             if (fieldSelection == 0) {
                 roleSelection = roleSelection == 0 ? 1 : 0;
             } else if (fieldSelection == 1) {
+#ifndef BWK_CARDPUTER_ADV
                 radioSelection = radioSelection == 0 ? 1 : 0;
+#endif
             } else {
                 channelSelection = (channelSelection + 1) % (sizeof(LINK_CHANNELS) / sizeof(LINK_CHANNELS[0]));
             }
@@ -404,7 +416,9 @@ void nrfLinkLoop() {
             if (fieldSelection == 0) {
                 roleSelection = roleSelection == 0 ? 1 : 0;
             } else if (fieldSelection == 1) {
+#ifndef BWK_CARDPUTER_ADV
                 radioSelection = radioSelection == 0 ? 1 : 0;
+#endif
             } else {
                 uint8_t count = sizeof(LINK_CHANNELS) / sizeof(LINK_CHANNELS[0]);
                 channelSelection = (channelSelection + count - 1) % count;

@@ -5,7 +5,7 @@
 #include "beacon_spam.h"
 #include "ui_theme.h"
 
-extern U8G2 u8g2; 
+extern U8G2_SSD1306_128X64_NONAME_F_HW_I2C u8g2;
 bool isSpamming = false;
 
 // Variables para la animación
