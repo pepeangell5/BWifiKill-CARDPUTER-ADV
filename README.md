@@ -85,6 +85,18 @@ se traduce a los cinco controles logicos que usaba el firmware original.
   <img src="img/Cardputer/ADV-NRF.JPG" width="62%" alt="Cardputer ADV con nRF24L01+ externo">
 </p>
 
+### Modulo RF recomendado
+
+El proyecto esta pensado para trabajar con un solo modulo **nRF24L01+**. Para
+mejor estabilidad se recomienda usar un modulo PA/LNA con antena externa y
+agregar un capacitor entre VCC y GND lo mas cerca posible del radio.
+
+<p align="center">
+  <img src="img/componentes/NRF24.png" width="31%" alt="Modulo nRF24L01+">
+  <img src="img/componentes/2NRF24.png" width="31%" alt="Comparacion de modulos nRF24L01+">
+  <img src="img/componentes/Pines_NRF24.png" width="31%" alt="Pinout del modulo nRF24L01+">
+</p>
+
 ## Conexion del nRF24
 
 El firmware utiliza el bus SPI de la microSD y reserva GPIO5/GPIO6 para control
@@ -305,6 +317,7 @@ BWifiKill-CARDPUTER-ADV/
 |-- .github/workflows/    Despliegue automatico del Web Flasher
 |-- binarios/             Imagen completa, segmentos y checksums
 |-- img/Cardputer/        Fotografias del montaje y funcionamiento
+|-- img/componentes/      Referencias visuales del nRF24L01+
 |-- include/              Configuracion y cabeceras
 |-- src/                  Aplicaciones y capa de compatibilidad
 |-- index.html            Interfaz del Web Flasher
