@@ -17,6 +17,7 @@ static volatile unsigned long suspicious_packets   = 0;
 static volatile unsigned long last_sec_suspicious  = 0;
 static unsigned long last_check_time = 0;
 static volatile uint32_t last_packet_time = 0;
+static volatile uint32_t last_suspicious_time = 0;
 static volatile uint8_t last_suspicious_subtype = 0;
 
 static int  selected_ch    = 1;
@@ -49,6 +50,7 @@ void centinela_sniffer_callback(void* buf, wifi_promiscuous_pkt_type_t type) {
     if (suspicious) {
         suspicious_packets++;
         last_sec_suspicious++;
+        last_suspicious_time = millis();
         last_suspicious_subtype = subtype;
     }
 }
@@ -184,7 +186,7 @@ static void updateCounters(unsigned long now) {
     last_sec_suspicious = 0;
     total_packets_view = attack_packets;
     suspicious_view = suspicious_packets;
-    uint32_t latestPacketTime = last_packet_time;
+    uint32_t latestSuspiciousTime = last_suspicious_time;
     interrupts();
 
     sec_packets_view = oneSecondPackets;
@@ -198,8 +200,9 @@ static void updateCounters(unsigned long now) {
 
     if (oneSecondSuspicious >= 25 || suspicious_windows >= 2) {
         attack_confirmed = true;
-    } else if (oneSecondSuspicious == 0 && now - latestPacketTime > 2500) {
+    } else if (oneSecondSuspicious == 0 && now - latestSuspiciousTime > 3000) {
         attack_confirmed = false;
+        suspicious_windows = 0;
     }
 
     AudioFeedback::activity(attack_confirmed ? AUDIO_ACTIVITY_WIFI : AUDIO_ACTIVITY_PACKET,
@@ -254,6 +257,7 @@ void centinelaLoop() {
             suspicious_packets = 0;
             last_sec_suspicious = 0;
             last_packet_time = millis();
+            last_suspicious_time = 0;
             last_suspicious_subtype = 0;
             interrupts();
             total_packets_view = 0;
