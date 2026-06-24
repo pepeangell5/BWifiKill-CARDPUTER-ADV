@@ -12,6 +12,15 @@ enum AudioActivityKind : uint8_t {
 
 namespace AudioFeedback {
     void begin();
+    void saveSettings();
+    void setMuted(bool enabled);
+    void setVolume(uint8_t percent);
+    void setMenuSounds(bool enabled);
+    void setMonitorSounds(bool enabled);
+    bool muted();
+    uint8_t volume();
+    bool menuSounds();
+    bool monitorSounds();
     void startupStep(uint8_t progress);
     void menuMove();
     void select();

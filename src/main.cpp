@@ -43,6 +43,7 @@
 #include "wifi_channel_scan.h"
 #include "menu_catalog.h"
 #include "Deauther.h"
+#include "system_settings.h"
 
 // --- NUEVO: helpers de Phase 0 ---
 #include "app_config.h"
@@ -92,7 +93,7 @@ int   category_app_index = 0;
 bool  browsingCategoryApps = false;
 float currentPos   = 0;
 bool  runningApp   = false;
-int   TOTAL_OPTIONS = 30;
+int   TOTAL_OPTIONS = 31;
 
 // --- ETIQUETAS DEL MENÚ (idénticas) ---
 const char* menu_labels[] = {
@@ -125,7 +126,8 @@ const char* menu_labels[] = {
     "NRF CHAT",        // 26
     "BT/WIFI COEX",    // 27
     "DUAL NRF SCOPE",  // 28
-    "DEAUTHER"         // 29
+    "DEAUTHER",        // 29
+    "CONFIGURACION"    // 30
 };
 
 static void deautherLoop() {
@@ -173,6 +175,7 @@ static const App apps[] = {
     /* 27 */ { "BT/WIFI COEX",    coexViewEnter,      coexViewLoop,      coexViewExit },
     /* 28 */ { "DUAL NRF SCOPE",  dualNrfScopeEnter,  dualNrfScopeLoop,  dualNrfScopeExit },
     /* 29 */ { "DEAUTHER",        nullptr,            deautherLoop,      nullptr },
+    /* 30 */ { "CONFIGURACION",   systemSettingsEnter, systemSettingsLoop, systemSettingsExit },
 };
 static const uint8_t APPS_COUNT = sizeof(apps) / sizeof(App);
 

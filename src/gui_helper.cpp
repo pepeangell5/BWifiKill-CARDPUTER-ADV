@@ -76,6 +76,7 @@ void drawNrfChatIcon(int x, int y) { u8g2.drawRFrame(x+4, y+7, 24, 15, 3); u8g2.
 void drawCoexIcon(int x, int y) { u8g2.drawFrame(x+3, y+7, 26, 18); u8g2.drawHLine(x+6, y+13, 20); u8g2.drawHLine(x+6, y+19, 20); u8g2.drawCircle(x+10, y+13, 2); u8g2.drawCircle(x+18, y+19, 2); u8g2.drawVLine(x+9, y+5, 23); u8g2.drawVLine(x+21, y+5, 23); u8g2.drawLine(x+5, y+27, x+27, y+5); }
 void drawDualNrfScopeIcon(int x, int y) { u8g2.drawFrame(x+3, y+6, 26, 21); u8g2.drawHLine(x+5, y+16, 22); u8g2.drawLine(x+5, y+12, x+9, y+9); u8g2.drawLine(x+9, y+9, x+14, y+14); u8g2.drawLine(x+14, y+14, x+20, y+8); u8g2.drawLine(x+20, y+8, x+27, y+13); u8g2.drawLine(x+5, y+23, x+10, y+18); u8g2.drawLine(x+10, y+18, x+16, y+24); u8g2.drawLine(x+16, y+24, x+22, y+19); u8g2.drawLine(x+22, y+19, x+27, y+22); }
 void drawSystemIcon(int x, int y) { u8g2.drawCircle(x+16, y+16, 11); u8g2.drawDisc(x+16, y+16, 4); u8g2.drawHLine(x+2, y+15, 7); u8g2.drawHLine(x+23, y+15, 7); u8g2.drawVLine(x+15, y+2, 7); u8g2.drawVLine(x+15, y+23, 7); }
+void drawSettingsIcon(int x, int y) { u8g2.drawCircle(x+16, y+16, 10); u8g2.drawCircle(x+16, y+16, 4); u8g2.drawHLine(x+3, y+15, 6); u8g2.drawHLine(x+23, y+15, 6); u8g2.drawVLine(x+15, y+3, 6); u8g2.drawVLine(x+15, y+23, 6); u8g2.drawLine(x+7, y+7, x+11, y+11); u8g2.drawLine(x+21, y+7, x+18, y+11); u8g2.drawLine(x+7, y+25, x+11, y+21); u8g2.drawLine(x+21, y+25, x+18, y+21); }
 void drawSkullIcon(int x, int y) {
     u8g2.drawCircle(x+16, y+13, 11);
     u8g2.drawBox(x+8, y+18, 16, 8);
@@ -240,6 +241,7 @@ static void drawMenuIcon(int index, int x, int y) {
         case 27: drawCoexIcon(x, y); break;
         case 28: drawDualNrfScopeIcon(x, y); break;
         case 29: drawSkullIcon(x, y); break;
+        case 30: drawSettingsIcon(x, y); break;
     }
 }
 

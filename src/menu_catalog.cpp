@@ -43,6 +43,7 @@ static const uint8_t GAMES_APPS[] = {
 };
 
 static const uint8_t SYSTEM_APPS[] = {
+    30, // CONFIGURACION
     15, // CONTROL ESCLAVO
     18, // LEER LOGS
     20  // ABOUT

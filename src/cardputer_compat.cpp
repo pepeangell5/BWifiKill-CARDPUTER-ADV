@@ -5,6 +5,7 @@
 #undef digitalRead
 #undef pinMode
 #include <M5Cardputer.h>
+#include <Preferences.h>
 
 #include "app_config.h"
 
@@ -17,6 +18,7 @@ constexpr int DST_Y = 7;
 
 uint16_t frame[DST_W * DST_H];
 bool cardputerReady = false;
+uint8_t brightness = 180;
 
 bool keyInWord(char key) {
     const auto& state = M5Cardputer.Keyboard.keysState();
@@ -48,8 +50,14 @@ void cardputerBegin() {
 
     auto cfg = M5.config();
     M5Cardputer.begin(cfg, true);
+    Preferences prefs;
+    if (prefs.begin("bwkcfg", true)) {
+        brightness = prefs.getUChar("bright", brightness);
+        prefs.end();
+    }
+    if (brightness < 20) brightness = 20;
     M5Cardputer.Display.setRotation(1);
-    M5Cardputer.Display.setBrightness(180);
+    M5Cardputer.Display.setBrightness(brightness);
     M5Cardputer.Display.fillScreen(0x0000);
     cardputerReady = true;
 
@@ -101,6 +109,20 @@ int cardputerDigitalRead(uint8_t pin) {
 void cardputerPinMode(uint8_t pin, uint8_t mode) {
     if (isLegacyButtonPin(pin)) return;
     ::pinMode(pin, mode);
+}
+
+void cardputerSetBrightness(uint8_t value) {
+    brightness = value < 20 ? 20 : value;
+    if (cardputerReady) M5Cardputer.Display.setBrightness(brightness);
+
+    Preferences prefs;
+    if (!prefs.begin("bwkcfg", false)) return;
+    prefs.putUChar("bright", brightness);
+    prefs.end();
+}
+
+uint8_t cardputerBrightness() {
+    return brightness;
 }
 
 #endif

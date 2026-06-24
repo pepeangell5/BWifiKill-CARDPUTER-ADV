@@ -11,6 +11,8 @@ void cardputerWaitForKeysReleased();
 void cardputerPresent(U8G2& source);
 int cardputerDigitalRead(uint8_t pin);
 void cardputerPinMode(uint8_t pin, uint8_t mode);
+void cardputerSetBrightness(uint8_t brightness);
+uint8_t cardputerBrightness();
 
 using CardputerU8G2Base = U8G2_SSD1306_128X64_NONAME_F_HW_I2C;
 

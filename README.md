@@ -48,6 +48,7 @@ solo nRF24L01+.
 - Interfaz original renderizada en el TFT ST7789 integrado de 240x135.
 - Navegacion completa desde el teclado fisico del Cardputer ADV.
 - Feedback sonoro integrado: inicio, menus, entrada/salida y monitores activos.
+- Menu de configuracion con silencio, volumen, brillo y toggles de sonido.
 - WiFi y BLE internos del ESP32-S3.
 - Un nRF24L01+ externo para analisis y comunicacion RF en 2.4 GHz.
 - Herramientas originalmente duales convertidas a muestreo secuencial.
@@ -195,7 +196,8 @@ aislado o sin autorizacion explicita.
 ### Games y sistema
 
 - Snake, Pong, Flappy, Invaders y Dino.
-- Control esclavo, visor de logs y pantalla About.
+- Configuracion persistente de audio/brillo, control esclavo, visor de logs y
+  pantalla About.
 
 ## Instalacion
 
