@@ -2,6 +2,7 @@
 #include "ui_theme.h"
 #include "app_config.h"
 #include "input_manager.h"
+#include "audio_feedback.h"
 #include <WiFi.h>
 #include <esp_wifi.h>
 #include <U8g2lib.h>
@@ -12,14 +13,19 @@ bool attack_confirmed = false;
 
 static volatile unsigned long attack_packets   = 0;
 static volatile unsigned long last_sec_packets = 0;
+static volatile unsigned long suspicious_packets   = 0;
+static volatile unsigned long last_sec_suspicious  = 0;
 static unsigned long last_check_time = 0;
 static volatile uint32_t last_packet_time = 0;
+static volatile uint8_t last_suspicious_subtype = 0;
 
 static int  selected_ch    = 1;
 static bool channel_fixed  = false;
 
 static unsigned long total_packets_view = 0;
 static unsigned long sec_packets_view   = 0;
+static unsigned long suspicious_view    = 0;
+static unsigned long sec_suspicious_view = 0;
 static int  current_bar_width = 0;
 static uint8_t historyBars[24];
 static uint8_t historyIndex = 0;
@@ -28,11 +34,22 @@ void centinela_sniffer_callback(void* buf, wifi_promiscuous_pkt_type_t type) {
     if (type != WIFI_PKT_MGMT) return;
     wifi_promiscuous_pkt_t* pkt = (wifi_promiscuous_pkt_t*)buf;
     uint8_t* payload = pkt->payload;
+    if (!payload) return;
 
-    if (payload[0] != 0x80 && payload[0] != 0x40) {
-        attack_packets++;
-        last_sec_packets++;
-        last_packet_time = millis();
+    const uint8_t subtype = payload[0] & 0xF0;
+    const bool suspicious =
+        subtype == 0xA0 ||  // disassociation
+        subtype == 0xC0 ||  // deauthentication
+        subtype == 0xD0;    // action frames, useful as anomaly signal
+
+    attack_packets++;
+    last_sec_packets++;
+    last_packet_time = millis();
+
+    if (suspicious) {
+        suspicious_packets++;
+        last_sec_suspicious++;
+        last_suspicious_subtype = subtype;
     }
 }
 
@@ -124,7 +141,7 @@ static void drawMonitor() {
     char buf[24];
     snprintf(buf, sizeof(buf), "PPS %lu", sec_packets_view);
     u8g2.drawStr(4, 23, buf);
-    snprintf(buf, sizeof(buf), "TOT %lu", total_packets_view);
+    snprintf(buf, sizeof(buf), "SUS %lu", sec_suspicious_view);
     u8g2.drawStr(72, 23, buf);
     u8g2.drawHLine(0, 25, 128);
 
@@ -144,19 +161,17 @@ static void drawMonitor() {
 }
 
 void runCentinelaSetup() {
-    esp_wifi_stop();
-    esp_wifi_deinit();
-    wifi_init_config_t cfg = WIFI_INIT_CONFIG_DEFAULT();
-    esp_wifi_init(&cfg);
+    WiFi.mode(WIFI_STA);
+    WiFi.disconnect(false, true);
+    esp_wifi_set_promiscuous(false);
     esp_wifi_set_storage(WIFI_STORAGE_RAM);
-    esp_wifi_set_mode(WIFI_MODE_NULL);
-    esp_wifi_start();
+    esp_wifi_set_mode(WIFI_MODE_STA);
 
     wifi_promiscuous_filter_t my_filter = { .filter_mask = WIFI_PROMIS_FILTER_MASK_MGMT };
     esp_wifi_set_promiscuous_filter(&my_filter);
     esp_wifi_set_promiscuous_rx_cb(centinela_sniffer_callback);
-    esp_wifi_set_promiscuous(true);
     esp_wifi_set_channel(selected_ch, WIFI_SECOND_CHAN_NONE);
+    esp_wifi_set_promiscuous(true);
 }
 
 static void updateCounters(unsigned long now) {
@@ -164,18 +179,25 @@ static void updateCounters(unsigned long now) {
 
     noInterrupts();
     unsigned long oneSecondPackets = last_sec_packets;
+    unsigned long oneSecondSuspicious = last_sec_suspicious;
     last_sec_packets = 0;
+    last_sec_suspicious = 0;
     total_packets_view = attack_packets;
+    suspicious_view = suspicious_packets;
     uint32_t latestPacketTime = last_packet_time;
     interrupts();
 
     sec_packets_view = oneSecondPackets;
+    sec_suspicious_view = oneSecondSuspicious;
 
-    if (oneSecondPackets > 80) attack_confirmed = true;
+    if (oneSecondSuspicious >= 3 || oneSecondPackets > 160) attack_confirmed = true;
     else if (now - latestPacketTime > 2000) attack_confirmed = false;
 
-    if (oneSecondPackets < 5) current_bar_width = 0;
-    else current_bar_width = map(oneSecondPackets, 5, 250, 8, 118);
+    AudioFeedback::activity(attack_confirmed ? AUDIO_ACTIVITY_WIFI : AUDIO_ACTIVITY_PACKET,
+                            min<unsigned long>(100, oneSecondPackets));
+
+    if (oneSecondPackets == 0) current_bar_width = 0;
+    else current_bar_width = map(constrain(oneSecondPackets, 1UL, 250UL), 1, 250, 8, 118);
     if (current_bar_width > 118) current_bar_width = 118;
 
     historyBars[historyIndex] = constrain(map(oneSecondPackets, 0, 250, 0, 8), 0, 8);
@@ -188,6 +210,8 @@ void centinelaEnter() {
     attack_confirmed   = false;
     total_packets_view = 0;
     sec_packets_view   = 0;
+    suspicious_view     = 0;
+    sec_suspicious_view = 0;
     current_bar_width  = 0;
     memset(historyBars, 0, sizeof(historyBars));
     historyIndex = 0;
@@ -195,6 +219,7 @@ void centinelaEnter() {
 
 void centinelaExit() {
     esp_wifi_set_promiscuous(false);
+    WiFi.mode(WIFI_OFF);
     channel_fixed = false;
     attack_confirmed = false;
 }
@@ -215,10 +240,15 @@ void centinelaLoop() {
             noInterrupts();
             attack_packets   = 0;
             last_sec_packets = 0;
+            suspicious_packets = 0;
+            last_sec_suspicious = 0;
             last_packet_time = millis();
+            last_suspicious_subtype = 0;
             interrupts();
             total_packets_view = 0;
             sec_packets_view   = 0;
+            suspicious_view     = 0;
+            sec_suspicious_view = 0;
             current_bar_width  = 0;
             memset(historyBars, 0, sizeof(historyBars));
             historyIndex = 0;
@@ -236,6 +266,7 @@ void centinelaLoop() {
 
     if (Input.pressed(BTN_ID_BACK)) {
         esp_wifi_set_promiscuous(false);
+        WiFi.mode(WIFI_OFF);
         channel_fixed = false;
         Input.consume(BTN_ID_BACK);
     }
