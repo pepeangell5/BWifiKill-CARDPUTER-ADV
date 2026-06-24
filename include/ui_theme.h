@@ -19,6 +19,7 @@ void drawSpinner(U8G2& display, int x, int y, uint8_t frame);
 void drawSignalBars(U8G2& display, int x, int y, uint8_t bars);
 void drawMiniWave(U8G2& display, int x, int y, uint8_t frame);
 void drawSplashFrame(U8G2& display, int progress, uint8_t frame);
+void drawBattery(U8G2& display, int x, int y);
 
 }
 

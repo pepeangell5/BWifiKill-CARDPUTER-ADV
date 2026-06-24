@@ -1,5 +1,9 @@
 #include "ui_theme.h"
 
+#ifdef BWK_CARDPUTER_ADV
+#include "cardputer_compat.h"
+#endif
+
 namespace UiTheme {
 
 static int centeredX(U8G2& display, const char* text) {
@@ -113,6 +117,26 @@ void drawSplashFrame(U8G2& display, int progress, uint8_t frame) {
     drawMiniWave(display, 8, 48, frame);
     drawMiniWave(display, 108, 48, frame + 4);
     drawProgressBar(display, 14, 56, 100, 6, progress);
+}
+
+void drawBattery(U8G2& display, int x, int y) {
+#ifdef BWK_CARDPUTER_ADV
+    int level = cardputerBatteryLevel();
+    if (level < 0) return;
+
+    int safeLevel = constrain(level, 0, 100);
+    char label[6];
+    snprintf(label, sizeof(label), "%d%%", safeLevel);
+
+    display.setDrawColor(0);
+    display.setFont(u8g2_font_5x7_tr);
+    display.drawStr(x - display.getStrWidth(label), y + 7, label);
+    display.setDrawColor(1);
+#else
+    (void)display;
+    (void)x;
+    (void)y;
+#endif
 }
 
 }

@@ -19,6 +19,9 @@ constexpr int DST_Y = 7;
 uint16_t frame[DST_W * DST_H];
 bool cardputerReady = false;
 uint8_t brightness = 180;
+int cachedBatteryLevel = -1;
+bool cachedCharging = false;
+uint32_t lastBatteryReadMs = 0;
 
 bool keyInWord(char key) {
     const auto& state = M5Cardputer.Keyboard.keysState();
@@ -123,6 +126,27 @@ void cardputerSetBrightness(uint8_t value) {
 
 uint8_t cardputerBrightness() {
     return brightness;
+}
+
+static void updateBatteryCache() {
+    if (!cardputerReady) return;
+    uint32_t now = millis();
+    if (now - lastBatteryReadMs < 5000 && cachedBatteryLevel >= 0) return;
+    lastBatteryReadMs = now;
+
+    int level = M5Cardputer.Power.getBatteryLevel();
+    if (level >= 0) cachedBatteryLevel = constrain(level, 0, 100);
+    cachedCharging = M5Cardputer.Power.isCharging() == m5::Power_Class::is_charging_t::is_charging;
+}
+
+int cardputerBatteryLevel() {
+    updateBatteryCache();
+    return cachedBatteryLevel;
+}
+
+bool cardputerIsCharging() {
+    updateBatteryCache();
+    return cachedCharging;
 }
 
 #endif

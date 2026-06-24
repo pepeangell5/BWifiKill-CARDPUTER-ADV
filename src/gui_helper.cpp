@@ -57,6 +57,7 @@ void drawBTJam(int x, int y) { u8g2.drawLine(x+12, y+6, x+12, y+26); u8g2.drawLi
 void drawRadar(int x, int y) { u8g2.drawCircle(x+16, y+16, 14); u8g2.drawCircle(x+16, y+16, 7); u8g2.drawLine(x+16, y+2, x+16, y+30); u8g2.drawLine(x+2, y+16, x+30, y+16); u8g2.drawLine(x+16, y+16, x+28, y+5); }
 void drawSearch(int x, int y) { u8g2.drawCircle(x+14, y+12, 9); u8g2.drawLine(x+20, y+19, x+28, y+28); }
 void drawMegaphone(int x, int y) { u8g2.drawTriangle(x+8, y+16, x+24, y+6, x+24, y+26); u8g2.drawBox(x+4, y+14, 6, 6); }
+void drawAntenna(int x, int y) { u8g2.drawLine(x+16, y+28, x+16, y+11); u8g2.drawLine(x+10, y+28, x+22, y+28); u8g2.drawLine(x+12, y+20, x+20, y+20); u8g2.drawDisc(x+16, y+10, 2); u8g2.drawCircle(x+16, y+10, 7, U8G2_DRAW_UPPER_LEFT | U8G2_DRAW_UPPER_RIGHT); u8g2.drawCircle(x+16, y+10, 12, U8G2_DRAW_UPPER_LEFT | U8G2_DRAW_UPPER_RIGHT); }
 void drawLock(int x, int y) { u8g2.drawFrame(x+8, y+14, 16, 13); u8g2.drawCircle(x+16, y+14, 7, U8G2_DRAW_UPPER_RIGHT|U8G2_DRAW_UPPER_LEFT); u8g2.drawDisc(x+16, y+21, 2); }
 void drawAlien(int x, int y) { u8g2.drawBox(x+6, y+10, 20, 10); u8g2.drawBox(x+4, y+12, 24, 6); u8g2.drawBox(x+8, y+22, 4, 4); u8g2.drawBox(x+20, y+22, 4, 4); u8g2.setDrawColor(0); u8g2.drawBox(x+9, y+13, 4, 4); u8g2.drawBox(x+19, y+13, 4, 4); u8g2.setDrawColor(1); }
 void drawFolder(int x, int y) { u8g2.drawFrame(x+4, y+8, 24, 18); u8g2.drawBox(x+4, y+4, 10, 4); }
@@ -242,6 +243,7 @@ static void drawMenuIcon(int index, int x, int y) {
         case 28: drawDualNrfScopeIcon(x, y); break;
         case 29: drawSkullIcon(x, y); break;
         case 30: drawSettingsIcon(x, y); break;
+        case 31: drawAntenna(x, y); break;
     }
 }
 
@@ -279,7 +281,11 @@ static void drawCategoryScreen() {
     u8g2.clearBuffer();
     char status[8];
     snprintf(status, sizeof(status), "%02d/%02d", category_index + 1, total);
-    UiTheme::drawHeader(u8g2, "BWifiKill v4.0", status);
+    UiTheme::drawHeader(u8g2, "BWifiKill v4.0");
+    UiTheme::drawBattery(u8g2, 124, 3);
+    u8g2.setDrawColor(1);
+    u8g2.setFont(u8g2_font_5x7_tr);
+    u8g2.drawStr(4, 23, status);
 
     drawCategoryIcon(cat.icon, 48, 18);
     drawCategoryRail(total, category_index);
@@ -304,12 +310,20 @@ static void drawCategoryAppList() {
     u8g2.clearBuffer();
     char status[8];
     snprintf(status, sizeof(status), "%02d/%02d", category_app_index + 1, cat.count);
-    UiTheme::drawHeader(u8g2, cat.name, status);
+    UiTheme::drawHeader(u8g2, cat.name);
+    UiTheme::drawBattery(u8g2, 124, 3);
+    u8g2.setDrawColor(1);
+    u8g2.setFont(u8g2_font_5x7_tr);
+    u8g2.drawStr(4, 23, status);
 
     drawMenuIcon(appIdx, 48, 18);
     drawCategoryRail(cat.count, category_app_index);
 
     const char* label = menu_labels[appIdx];
+    u8g2.setFont(u8g2_font_6x10_tr);
+    const char* helpHint = "H AYUDA";
+    u8g2.drawStr(125 - u8g2.getStrWidth(helpHint), 23, helpHint);
+
     u8g2.setFont(u8g2_font_6x10_tr);
     int labelWidth = u8g2.getStrWidth(label);
     int labelX = (128 - labelWidth) / 2;
