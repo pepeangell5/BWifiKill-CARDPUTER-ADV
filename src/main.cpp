@@ -48,6 +48,7 @@
 #include "app_config.h"
 #include "input_manager.h"
 #include "app_lifecycle.h"
+#include "audio_feedback.h"
 
 // --- PROTOTIPOS ---
 void wifiscanSetup(); void wifiscanLoop();
@@ -198,12 +199,14 @@ static bool needsRestartAfterExit(int idx) {
 void setup() {
     Serial.begin(115200);
     u8g2.begin();
+    AudioFeedback::begin();
 
     Input.begin();
     Host.registerApps(apps, APPS_COUNT);
 
     
     for (int i = 0; i <= 100; i += 5) {
+        AudioFeedback::startupStep(i);
         UiTheme::drawSplashFrame(u8g2, i, i / 5);
         u8g2.sendBuffer();
         delay(35);
@@ -226,6 +229,7 @@ void loop() {
         // --- NAVEGACIÓN DEL MENÚ ---
         // repeating() = primer pulso + auto-repeat fluido (reemplaza delay(200))
         if (Input.repeating(BTN_ID_UP)) {
+            AudioFeedback::menuMove();
             if (browsingCategoryApps) {
                 const MenuCategory& cat = menuCategoryAt(category_index);
                 category_app_index--;
@@ -237,6 +241,7 @@ void loop() {
             }
         }
         if (Input.repeating(BTN_ID_DOWN)) {
+            AudioFeedback::menuMove();
             if (browsingCategoryApps) {
                 const MenuCategory& cat = menuCategoryAt(category_index);
                 category_app_index++;
@@ -252,14 +257,16 @@ void loop() {
 
         if (Input.pressed(BTN_ID_OK)) {
             if (!browsingCategoryApps) {
+                AudioFeedback::select();
                 browsingCategoryApps = true;
                 category_app_index = 0;
                 menu_index = menuCategoryAppIndex(category_index, category_app_index);
                 delay(180);
             } else {
+                AudioFeedback::launch();
                 menu_index = menuCategoryAppIndex(category_index, category_app_index);
                 runningApp = true;
-            Host.launch(menu_index);   // llama enter() si está definido
+                Host.launch(menu_index);   // llama enter() si está definido
 #ifdef BWK_CARDPUTER_ADV
                 cardputerWaitForKeysReleased();
 #endif
@@ -268,6 +275,7 @@ void loop() {
         }
 
         if (Input.pressed(BTN_ID_BACK) && browsingCategoryApps) {
+            AudioFeedback::back();
             browsingCategoryApps = false;
             delay(180);
         }
@@ -280,6 +288,7 @@ void loop() {
         // lo hacen vía su propio digitalRead(25). Aquí sincronizamos el Host
         // y hacemos la misma limpieza que el handler de BACK.
         if (!runningApp && Host.isRunning()) {
+            AudioFeedback::exitApp();
             Host.shutdown();
             performBackCleanup();
             if (needsRestartAfterExit(menu_index)) {
@@ -291,6 +300,7 @@ void loop() {
         // CASO B: BACK manejado desde main.cpp (fallback).
         // Misma excepción de siempre: IP Scanner (14) maneja su propio BACK.
         if (Input.pressed(BTN_ID_BACK) && menu_index != 14) {
+            AudioFeedback::exitApp();
             runningApp = false;
             Host.shutdown();
             performBackCleanup();

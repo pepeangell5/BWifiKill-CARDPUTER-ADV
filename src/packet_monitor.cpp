@@ -2,6 +2,7 @@
 #include "ui_theme.h"
 #include "app_config.h"
 #include "input_manager.h"
+#include "audio_feedback.h"
 #include <WiFi.h>
 #include <esp_wifi.h>
 #include <U8g2lib.h>
@@ -190,6 +191,8 @@ void monitorLoop() {
 
         // Spawn flujo
         spawnDots(totalPackets, dataPackets);
+        AudioFeedback::activity(AUDIO_ACTIVITY_PACKET,
+                                min<uint32_t>(100, totalPackets * 7));
 
         // Historial: shift y agregar nueva entrada al final
         for (int i = 0; i < 127; i++) history[i] = history[i + 1];

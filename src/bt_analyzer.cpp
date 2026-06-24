@@ -54,6 +54,7 @@
 #include <ctype.h>
 
 #include "app_config.h"
+#include "audio_feedback.h"
 #include "bt_remote.h"
 #include "input_manager.h"
 #include "ui_theme.h"
@@ -586,13 +587,17 @@ static void updatePacketRates() {
     if (now - lastRateTick < 1000) return;
     lastRateTick = now;
 
+    uint16_t totalPps = 0;
     portENTER_CRITICAL(&deviceMux);
     for (uint8_t i = 0; i < deviceCount; i++) {
         if (!devices[i].used) continue;
         devices[i].pps = devices[i].secondPackets;
+        totalPps += devices[i].pps;
         devices[i].secondPackets = 0;
     }
     portEXIT_CRITICAL(&deviceMux);
+
+    AudioFeedback::activity(AUDIO_ACTIVITY_BLE, min<uint16_t>(100, totalPps * 8));
 }
 
 // Marca como libres los slots con lastSeen > PURGE_MS de antiguedad,

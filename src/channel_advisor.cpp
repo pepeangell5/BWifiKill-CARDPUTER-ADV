@@ -1,5 +1,6 @@
 #include "channel_advisor.h"
 #include "ui_theme.h"
+#include "audio_feedback.h"
 #include <RF24.h>
 #include <U8g2lib.h>
 #include <WiFi.h>
@@ -193,6 +194,8 @@ void channelAdvisorExit() {
 
 void channelAdvisorLoop() {
     scanProfile();
+    AudioFeedback::activity(AUDIO_ACTIVITY_RF,
+                            min<uint16_t>(100, profile[bestNrf[0]] * 5));
     frameTick++;
 
     u8g2.clearBuffer();

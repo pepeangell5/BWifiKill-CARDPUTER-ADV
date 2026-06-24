@@ -1,6 +1,7 @@
 #include "bt_spectrum.h"
 #include "bt_remote.h"
 #include "ui_theme.h"
+#include "audio_feedback.h"
 #include <BLEAdvertisedDevice.h>
 #include <BLEDevice.h>
 #include <BLEScan.h>
@@ -626,6 +627,9 @@ void btSpectrumLoop() {
     //    se muestra en pantalla, para consistencia visual)
     long totalEnergy = 0;
     for (uint8_t i = 0; i < BT_CHANNELS; i++) totalEnergy += displayedSample[i];
+    AudioFeedback::activity(AUDIO_ACTIVITY_BLE,
+                            max<uint16_t>(min<long>(100, totalEnergy / 8),
+                                          min<uint16_t>(100, viewBlePps * 12)));
 
     // 4. Render
     u8g2.clearBuffer();

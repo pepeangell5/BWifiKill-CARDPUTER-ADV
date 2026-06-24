@@ -2,6 +2,7 @@
 #include "ui_theme.h"
 #include "app_config.h"
 #include "input_manager.h"
+#include "audio_feedback.h"
 #include <RF24.h>
 #include <U8g2lib.h>
 
@@ -263,7 +264,11 @@ void spectrographLoop() {
     if (!calibrated) {
         drawCalibrationOverlay();
     } else if (showAlert) {
+        AudioFeedback::alert();
         drawAlertOverlay(totalEnergy);
+    } else {
+        AudioFeedback::activity(AUDIO_ACTIVITY_RF,
+                                min<long>(100, totalEnergy / 18));
     }
 
     // Decay de peaks

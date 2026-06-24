@@ -1,6 +1,7 @@
 #include "rf_heatmap.h"
 #include "input_manager.h"
 #include "ui_theme.h"
+#include "audio_feedback.h"
 #include <RF24.h>
 #include <U8g2lib.h>
 #include <WiFi.h>
@@ -172,6 +173,7 @@ void rfHeatmapLoop() {
     uint8_t row[BUCKET_COUNT];
     scanHeatRow(row);
     pushHeatRow(row);
+    AudioFeedback::activity(AUDIO_ACTIVITY_RF, hotLevel * 30);
     frameTick++;
 
     u8g2.clearBuffer();

@@ -1,6 +1,7 @@
 #include "coex_view.h"
 #include "input_manager.h"
 #include "ui_theme.h"
+#include "audio_feedback.h"
 #include <RF24.h>
 #include <U8g2lib.h>
 #include <WiFi.h>
@@ -197,6 +198,7 @@ void coexViewLoop() {
     }
 
     scanProfile();
+    AudioFeedback::activity(AUDIO_ACTIVITY_RF, min<uint16_t>(100, hotLevel * 5));
     frameTick++;
 
     u8g2.clearBuffer();
