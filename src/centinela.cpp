@@ -27,6 +27,7 @@ static unsigned long sec_packets_view   = 0;
 static unsigned long suspicious_view    = 0;
 static unsigned long sec_suspicious_view = 0;
 static int  current_bar_width = 0;
+static uint8_t suspicious_windows = 0;
 static uint8_t historyBars[24];
 static uint8_t historyIndex = 0;
 
@@ -39,8 +40,7 @@ void centinela_sniffer_callback(void* buf, wifi_promiscuous_pkt_type_t type) {
     const uint8_t subtype = payload[0] & 0xF0;
     const bool suspicious =
         subtype == 0xA0 ||  // disassociation
-        subtype == 0xC0 ||  // deauthentication
-        subtype == 0xD0;    // action frames, useful as anomaly signal
+        subtype == 0xC0;    // deauthentication
 
     attack_packets++;
     last_sec_packets++;
@@ -91,9 +91,9 @@ static void drawIntensityMeter(uint32_t pps, bool alert) {
 
     u8g2.setFont(u8g2_font_5x7_tr);
     u8g2.drawStr(x, 30, "INTENSIDAD");
-    if (alert && (millis() / 140) % 2 == 0) {
+    if (current_bar_width >= 86) {
         u8g2.drawStr(84, 30, "ALTA");
-    } else if (pps > 0) {
+    } else if (current_bar_width >= 28) {
         u8g2.drawStr(79, 30, "MEDIA");
     } else {
         u8g2.drawStr(87, 30, "BAJA");
@@ -162,7 +162,7 @@ static void drawMonitor() {
 
 void runCentinelaSetup() {
     WiFi.mode(WIFI_STA);
-    WiFi.disconnect(false, true);
+    WiFi.disconnect(false, false);
     esp_wifi_set_promiscuous(false);
     esp_wifi_set_storage(WIFI_STORAGE_RAM);
     esp_wifi_set_mode(WIFI_MODE_STA);
@@ -190,8 +190,17 @@ static void updateCounters(unsigned long now) {
     sec_packets_view = oneSecondPackets;
     sec_suspicious_view = oneSecondSuspicious;
 
-    if (oneSecondSuspicious >= 3 || oneSecondPackets > 160) attack_confirmed = true;
-    else if (now - latestPacketTime > 2000) attack_confirmed = false;
+    if (oneSecondSuspicious >= 8) {
+        if (suspicious_windows < 5) suspicious_windows++;
+    } else if (suspicious_windows > 0) {
+        suspicious_windows--;
+    }
+
+    if (oneSecondSuspicious >= 25 || suspicious_windows >= 2) {
+        attack_confirmed = true;
+    } else if (oneSecondSuspicious == 0 && now - latestPacketTime > 2500) {
+        attack_confirmed = false;
+    }
 
     AudioFeedback::activity(attack_confirmed ? AUDIO_ACTIVITY_WIFI : AUDIO_ACTIVITY_PACKET,
                             min<unsigned long>(100, oneSecondPackets));
@@ -213,6 +222,7 @@ void centinelaEnter() {
     suspicious_view     = 0;
     sec_suspicious_view = 0;
     current_bar_width  = 0;
+    suspicious_windows = 0;
     memset(historyBars, 0, sizeof(historyBars));
     historyIndex = 0;
 }
@@ -222,6 +232,7 @@ void centinelaExit() {
     WiFi.mode(WIFI_OFF);
     channel_fixed = false;
     attack_confirmed = false;
+    suspicious_windows = 0;
 }
 
 void centinelaLoop() {
@@ -250,6 +261,7 @@ void centinelaLoop() {
             suspicious_view     = 0;
             sec_suspicious_view = 0;
             current_bar_width  = 0;
+            suspicious_windows = 0;
             memset(historyBars, 0, sizeof(historyBars));
             historyIndex = 0;
             attack_confirmed = false;
