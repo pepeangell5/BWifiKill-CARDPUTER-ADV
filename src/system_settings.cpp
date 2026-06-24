@@ -112,41 +112,67 @@ const char* labelFor(uint8_t item) {
     }
 }
 
-void drawRow(uint8_t item, int y) {
-    bool active = item == selected;
-    if (active) {
-        u8g2.drawBox(0, y - 8, 128, 10);
-        u8g2.setDrawColor(0);
-    }
+uint8_t numericPercent(uint8_t item) {
+    if (item == SET_VOLUME) return AudioFeedback::volume();
+    if (item == SET_BRIGHTNESS) return brightnessPercent();
+    return 0;
+}
 
+bool isNumeric(uint8_t item) {
+    return item == SET_VOLUME || item == SET_BRIGHTNESS;
+}
+
+void drawCentered(int y, const char* text) {
+    int x = (128 - u8g2.getStrWidth(text)) / 2;
+    if (x < 0) x = 0;
+    u8g2.drawStr(x, y, text);
+}
+
+void drawSettingsCard(uint8_t item) {
     char value[12];
     valueText(item, value, sizeof(value));
 
-    u8g2.setFont(u8g2_font_5x7_tr);
-    u8g2.drawStr(3, y, labelFor(item));
-    int valueX = 125 - u8g2.getStrWidth(value);
-    u8g2.drawStr(valueX, y, value);
-
-    if (active && editing && (item == SET_VOLUME || item == SET_BRIGHTNESS)) {
-        u8g2.drawFrame(valueX - 2, y - 8, u8g2.getStrWidth(value) + 4, 10);
+    u8g2.drawRFrame(4, 27, 120, 28, 4);
+    if (editing) {
+        u8g2.drawBox(4, 27, 120, 9);
+        u8g2.setDrawColor(0);
+        u8g2.setFont(u8g2_font_5x7_tr);
+        drawCentered(34, "EDITANDO");
+        u8g2.setDrawColor(1);
     }
 
-    if (active) u8g2.setDrawColor(1);
+    u8g2.setFont(u8g2_font_6x10_tr);
+    drawCentered(44, labelFor(item));
+
+    if (isNumeric(item)) {
+        u8g2.setFont(u8g2_font_5x7_tr);
+        u8g2.drawStr(7, 53, value);
+        UiTheme::drawProgressBar(u8g2, 34, 48, 84, 7, numericPercent(item));
+    } else {
+        u8g2.setFont(u8g2_font_6x10_tr);
+        drawCentered(55, value);
+    }
 }
 
 void drawSettings() {
     u8g2.clearBuffer();
     UiTheme::drawHeader(u8g2, "CONFIG", editing ? "EDIT" : "SIST");
 
-    for (uint8_t i = 0; i < SET_COUNT; i++) {
-        drawRow(i, 20 + i * 7);
-    }
+    char counter[8];
+    snprintf(counter, sizeof(counter), "%02u/%02u", selected + 1, SET_COUNT);
+    u8g2.setFont(u8g2_font_5x7_tr);
+    u8g2.drawStr(4, 24, counter);
 
-    u8g2.setFont(u8g2_font_4x6_tf);
+    const char* topHint = editing ? "OK GUARDA" : "OK CAMBIA";
+    u8g2.drawStr(125 - u8g2.getStrWidth(topHint), 24, topHint);
+
+    drawSettingsCard(selected);
+
+    u8g2.setFont(u8g2_font_5x7_tr);
     if (editing) {
-        u8g2.drawStr(2, 63, "UP/DN cambia  OK guarda");
+        u8g2.drawStr(13, 63, "UP/DOWN AJUSTA");
     } else {
-        u8g2.drawStr(2, 63, "OK editar/toggle  BACK sale");
+        u8g2.drawStr(20, 63, "BACK SALIR");
     }
 
     if (millis() < toastUntil) {

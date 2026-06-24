@@ -149,4 +149,12 @@ bool cardputerIsCharging() {
     return cachedCharging;
 }
 
+bool cardputerKeyPressed(char key) {
+    if (!cardputerReady) return false;
+    M5Cardputer.update();
+    return M5Cardputer.Keyboard.isKeyPressed(key) ||
+           M5Cardputer.Keyboard.isKeyPressed((char)toupper(key)) ||
+           keyInWord(key);
+}
+
 #endif

@@ -320,9 +320,8 @@ static void drawCategoryAppList() {
     drawCategoryRail(cat.count, category_app_index);
 
     const char* label = menu_labels[appIdx];
-    u8g2.setFont(u8g2_font_6x10_tr);
-    const char* helpHint = "H AYUDA";
-    u8g2.drawStr(125 - u8g2.getStrWidth(helpHint), 23, helpHint);
+    u8g2.setFont(u8g2_font_5x7_tr);
+    u8g2.drawStr(4, 50, "H:AYUDA");
 
     u8g2.setFont(u8g2_font_6x10_tr);
     int labelWidth = u8g2.getStrWidth(label);

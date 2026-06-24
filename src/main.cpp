@@ -44,12 +44,17 @@
 #include "menu_catalog.h"
 #include "Deauther.h"
 #include "system_settings.h"
+#include "nrf_diagnostic.h"
+#include "app_help.h"
 
 // --- NUEVO: helpers de Phase 0 ---
 #include "app_config.h"
 #include "input_manager.h"
 #include "app_lifecycle.h"
 #include "audio_feedback.h"
+#ifdef BWK_CARDPUTER_ADV
+#include "cardputer_compat.h"
+#endif
 
 // --- PROTOTIPOS ---
 void wifiscanSetup(); void wifiscanLoop();
@@ -93,7 +98,7 @@ int   category_app_index = 0;
 bool  browsingCategoryApps = false;
 float currentPos   = 0;
 bool  runningApp   = false;
-int   TOTAL_OPTIONS = 31;
+int   TOTAL_OPTIONS = 32;
 
 // --- ETIQUETAS DEL MENÚ (idénticas) ---
 const char* menu_labels[] = {
@@ -127,7 +132,8 @@ const char* menu_labels[] = {
     "BT/WIFI COEX",    // 27
     "DUAL NRF SCOPE",  // 28
     "DEAUTHER",        // 29
-    "CONFIGURACION"    // 30
+    "CONFIGURACION",   // 30
+    "NRF DIAG"         // 31
 };
 
 static void deautherLoop() {
@@ -176,8 +182,21 @@ static const App apps[] = {
     /* 28 */ { "DUAL NRF SCOPE",  dualNrfScopeEnter,  dualNrfScopeLoop,  dualNrfScopeExit },
     /* 29 */ { "DEAUTHER",        nullptr,            deautherLoop,      nullptr },
     /* 30 */ { "CONFIGURACION",   systemSettingsEnter, systemSettingsLoop, systemSettingsExit },
+    /* 31 */ { "NRF DIAG",        nrfDiagnosticEnter, nrfDiagnosticLoop, nrfDiagnosticExit },
 };
 static const uint8_t APPS_COUNT = sizeof(apps) / sizeof(App);
+
+static bool helpKeyPressed() {
+#ifdef BWK_CARDPUTER_ADV
+    static bool wasHeld = false;
+    bool held = cardputerKeyPressed('h');
+    bool pressed = held && !wasHeld;
+    wasHeld = held;
+    return pressed;
+#else
+    return false;
+#endif
+}
 
 
 static void performBackCleanup() {
@@ -258,6 +277,15 @@ void loop() {
 
         drawBruceMenu();
 
+        if (browsingCategoryApps && (helpKeyPressed() || Input.pressed(BTN_ID_AUX))) {
+            AudioFeedback::select();
+            menu_index = menuCategoryAppIndex(category_index, category_app_index);
+            showAppHelp(menu_index);
+            Input.consume(BTN_ID_AUX);
+            delay(120);
+            return;
+        }
+
         if (Input.pressed(BTN_ID_OK)) {
             if (!browsingCategoryApps) {
                 AudioFeedback::select();
@@ -284,6 +312,14 @@ void loop() {
         }
     } else {
         // --- EJECUCIÓN ---
+        if (helpKeyPressed() || Input.pressed(BTN_ID_AUX)) {
+            AudioFeedback::select();
+            showAppHelp(menu_index);
+            Input.consume(BTN_ID_AUX);
+            delay(120);
+            return;
+        }
+
         Host.tick();   // llama loop() del módulo actual
 
         // CASO A: el módulo se salió desde adentro (puso runningApp = false).

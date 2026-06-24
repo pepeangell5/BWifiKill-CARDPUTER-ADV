@@ -15,6 +15,7 @@ void cardputerSetBrightness(uint8_t brightness);
 uint8_t cardputerBrightness();
 int cardputerBatteryLevel();
 bool cardputerIsCharging();
+bool cardputerKeyPressed(char key);
 
 using CardputerU8G2Base = U8G2_SSD1306_128X64_NONAME_F_HW_I2C;
 
