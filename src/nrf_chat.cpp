@@ -67,19 +67,11 @@ static char lastInbox[21] = "";
 static char lastOutbox[21] = "";
 
 static RF24& chatRadio() {
-#ifdef BWK_CARDPUTER_ADV
-    return jam1;
-#else
     return radioSelection == 0 ? jam1 : jam2;
-#endif
 }
 
 static RF24& idleRadio() {
-#ifdef BWK_CARDPUTER_ADV
-    return jam1;
-#else
     return radioSelection == 0 ? jam2 : jam1;
-#endif
 }
 
 static uint8_t selectedChannel() {
@@ -124,10 +116,8 @@ static void configureRadio() {
     jam2.stopListening();
 
     RF24& radio = chatRadio();
-#ifndef BWK_CARDPUTER_ADV
     RF24& idle = idleRadio();
     idle.powerDown();
-#endif
 
     radioBeginOk = radio.begin();
     radio.powerDown();
@@ -369,9 +359,7 @@ void nrfChatLoop() {
             if (fieldSelection == 0) {
                 roleSelection = roleSelection == 0 ? 1 : 0;
             } else if (fieldSelection == 1) {
-#ifndef BWK_CARDPUTER_ADV
                 radioSelection = radioSelection == 0 ? 1 : 0;
-#endif
             } else {
                 channelSelection = (channelSelection + 1) % (sizeof(CHAT_CHANNELS) / sizeof(CHAT_CHANNELS[0]));
             }
@@ -380,9 +368,7 @@ void nrfChatLoop() {
             if (fieldSelection == 0) {
                 roleSelection = roleSelection == 0 ? 1 : 0;
             } else if (fieldSelection == 1) {
-#ifndef BWK_CARDPUTER_ADV
                 radioSelection = radioSelection == 0 ? 1 : 0;
-#endif
             } else {
                 uint8_t count = sizeof(CHAT_CHANNELS) / sizeof(CHAT_CHANNELS[0]);
                 channelSelection = (channelSelection + count - 1) % count;

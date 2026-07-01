@@ -116,11 +116,7 @@ static void drawTrace(const uint8_t* trace,
 static void drawScope() {
     char status[10];
     snprintf(status, sizeof(status), "F%04u", frames);
-#ifdef BWK_CARDPUTER_ADV
-    UiTheme::drawHeader(u8g2, "NRF SCOPE", status);
-#else
     UiTheme::drawHeader(u8g2, "DUAL NRF", status);
-#endif
 
     drawTrace(lowTrace, LOW_COUNT, lowCursor, 18, 38, "L", lowPeak);
     drawTrace(highTrace, HIGH_COUNT, highCursor, 42, 62, "H", highPeak);

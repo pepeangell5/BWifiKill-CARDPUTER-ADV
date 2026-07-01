@@ -49,15 +49,11 @@ static void drawBtActiveOnce() {
 
 void btJammerSetup() {
     jam1.begin();
-#ifndef BWK_CARDPUTER_ADV
     jam2.begin();
-#endif
     jam1.setAutoAck(false); jam1.setPALevel(RF24_PA_MAX, true);
     jam1.setDataRate(RF24_1MBPS); jam1.setCRCLength(RF24_CRC_DISABLED);
-#ifndef BWK_CARDPUTER_ADV
     jam2.setAutoAck(false); jam2.setPALevel(RF24_PA_MAX, true);
     jam2.setDataRate(RF24_1MBPS); jam2.setCRCLength(RF24_CRC_DISABLED);
-#endif
 }
 
 void btJammerLoop() {
@@ -65,18 +61,14 @@ void btJammerLoop() {
         isBtJamming = !isBtJamming;
         if (!isBtJamming) {
             jam1.stopConstCarrier();
-#ifndef BWK_CARDPUTER_ADV
             jam2.stopConstCarrier();
-#endif
         } else {
             u8g2.clearBuffer();
             drawBtActiveOnce();
             u8g2.sendBuffer();
 
             jam1.startConstCarrier(RF24_PA_MAX, hopping_channel[0]);
-#ifndef BWK_CARDPUTER_ADV
             jam2.startConstCarrier(RF24_PA_MAX, hopping_channel[total_bt_chans - 1]);
-#endif
         }
         delay(400);
     }
@@ -85,16 +77,12 @@ void btJammerLoop() {
         while (isBtJamming) {
             for (int i = 0; i < total_bt_chans; i++) {
                 jam1.setChannel(hopping_channel[i]);
-#ifndef BWK_CARDPUTER_ADV
                 jam2.setChannel(hopping_channel[total_bt_chans - 1 - i]);
-#endif
             }
             if (digitalRead(BTN_OK) == LOW || digitalRead(BTN_BACK) == LOW) {
                 isBtJamming = false;
                 jam1.stopConstCarrier();
-#ifndef BWK_CARDPUTER_ADV
                 jam2.stopConstCarrier();
-#endif
                 return;
             }
         }

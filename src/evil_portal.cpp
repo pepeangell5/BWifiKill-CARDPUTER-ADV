@@ -113,20 +113,16 @@ void startJammer(int channel) {
     jam1.setChannel(rf_ch);
     jam1.startConstCarrier(RF24_PA_MAX, rf_ch);
     
-#ifndef BWK_CARDPUTER_ADV
     jam2.begin();
     jam2.setPALevel(RF24_PA_MAX);
     jam2.setDataRate(RF24_2MBPS);
     jam2.setChannel(rf_ch + 3); 
     jam2.startConstCarrier(RF24_PA_MAX, rf_ch + 3);
-#endif
 }
 
 void stopJammer() {
     jam1.stopConstCarrier();
-#ifndef BWK_CARDPUTER_ADV
     jam2.stopConstCarrier();
-#endif
 }
 
 void saveToLog(String email, String pass, String header) {

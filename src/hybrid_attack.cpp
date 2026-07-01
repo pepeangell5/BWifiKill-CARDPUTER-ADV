@@ -59,14 +59,10 @@ void hybridAttackLoop() {
             esp_wifi_set_promiscuous(true);
             jam1.begin();
             jam1.setDataRate(RF24_1MBPS);
-#ifndef BWK_CARDPUTER_ADV
             jam2.begin();
             jam2.setDataRate(RF24_1MBPS);
-#endif
             jam1.startConstCarrier(RF24_PA_MAX, 40);
-#ifndef BWK_CARDPUTER_ADV
             jam2.startConstCarrier(RF24_PA_MAX, 60);
-#endif
 
             u8g2.clearBuffer();
             drawHybridArmed();
@@ -75,9 +71,7 @@ void hybridAttackLoop() {
             esp_wifi_set_promiscuous(false);
             WiFi.mode(WIFI_OFF);
             jam1.stopConstCarrier();
-#ifndef BWK_CARDPUTER_ADV
             jam2.stopConstCarrier();
-#endif
         }
         delay(400);
     }
@@ -107,18 +101,14 @@ void hybridAttackLoop() {
             esp_wifi_80211_tx(WIFI_IF_STA, beacon_pkt, pos, false);
 
             jam1.setChannel(random(2, 40));
-#ifndef BWK_CARDPUTER_ADV
             jam2.setChannel(random(41, 80));
-#endif
 
             if (digitalRead(25) == LOW) {
                 isHybridActive = false;
                 esp_wifi_set_promiscuous(false);
                 WiFi.mode(WIFI_OFF);
                 jam1.stopConstCarrier();
-#ifndef BWK_CARDPUTER_ADV
                 jam2.stopConstCarrier();
-#endif
                 return;
             }
         }
