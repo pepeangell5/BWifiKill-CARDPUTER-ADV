@@ -4,7 +4,7 @@
 ![MCU](https://img.shields.io/badge/MCU-ESP32--S3-00979d)
 ![Framework](https://img.shields.io/badge/framework-Arduino%20%7C%20PlatformIO-f58220)
 ![Display](https://img.shields.io/badge/display-ST7789%20240x135-4c6ef5)
-![RF](https://img.shields.io/badge/RF-2x%20nRF24L01%2B-8f5bd7)
+![RF](https://img.shields.io/badge/RF-1x%20nRF24L01%2B-8f5bd7)
 ![Status](https://img.shields.io/badge/status-release%20candidate-2ea44f)
 ![License](https://img.shields.io/badge/license-MIT-black)
 
@@ -14,8 +14,8 @@
 Port oficial de **BWifiKill ESP32 V4.0** para el dispositivo comercial
 **M5Stack Cardputer ADV**. La migracion conserva las herramientas WiFi,
 Bluetooth y RF del proyecto original, reemplaza el OLED y los botones por la
-pantalla y teclado integrados, y adapta las funciones RF para trabajar con
-dos nRF24L01+ externos.
+pantalla y teclado integrados, y adapta las funciones RF para trabajar con un
+solo nRF24L01+.
 
 > Proyecto educativo para investigacion, aprendizaje de electronica, analisis
 > pasivo y auditorias expresamente autorizadas. Las funciones de laboratorio
@@ -31,7 +31,7 @@ dos nRF24L01+ externos.
 - [Caracteristicas](#caracteristicas)
 - [Arquitectura](#arquitectura)
 - [Hardware](#hardware)
-- [Conexion de los nRF24](#conexion-de-los-nrf24)
+- [Conexion del nRF24](#conexion-del-nrf24)
 - [Controles](#controles)
 - [Funciones](#funciones)
 - [Instalacion](#instalacion)
@@ -50,9 +50,8 @@ dos nRF24L01+ externos.
 - Feedback sonoro integrado: inicio, menus, entrada/salida y monitores activos.
 - Menu de configuracion con silencio, volumen, brillo y toggles de sonido.
 - WiFi y BLE internos del ESP32-S3.
-- Dos nRF24L01+ externos para analisis y comunicacion RF en 2.4 GHz.
-- Herramientas duales restauradas para muestreo simultaneo con NRF1/NRF2.
-- Pantalla `NRF STATUS` para verificar si cada modulo responde correctamente.
+- Un nRF24L01+ externo para analisis y comunicacion RF en 2.4 GHz.
+- Herramientas originalmente duales convertidas a muestreo secuencial.
 - Web Flasher compatible con ESP32-S3.
 - Binario completo y segmentos separados con checksums SHA-256.
 - Entorno original `esp32dev` conservado junto al nuevo `cardputer_adv`.
@@ -67,8 +66,7 @@ flowchart LR
     HAL --> TFT["TFT ST7789 240x135"]
     APPS --> WB["WiFi / BLE ESP32-S3"]
     APPS --> RF["RF24 SPI"]
-    RF --> NRF1["nRF24L01+ NRF1"]
-    RF --> NRF2["nRF24L01+ NRF2"]
+    RF --> NRF["nRF24L01+ unico"]
     SD["Bus microSD"] -. "SPI compartido" .-> RF
 ```
 
@@ -81,9 +79,9 @@ se traduce a los cinco controles logicos que usaba el firmware original.
 | Componente | Cantidad | Descripcion |
 | --- | ---: | --- |
 | M5Stack Cardputer ADV | 1 | Plataforma principal con ESP32-S3, TFT, teclado y bateria. |
-| nRF24L01+ | 2 | Radios externas de 2.4 GHz; se recomienda version PA/LNA con antena. |
-| Capacitor | 2 | Entre 10 uF y 100 uF, uno cerca de VCC/GND de cada nRF24. |
-| Cables Dupont | 10+ | Alimentacion, tierra, SPI compartido, CE y CSN independientes. |
+| nRF24L01+ | 1 | Radio externa de 2.4 GHz; se recomienda version PA/LNA con antena. |
+| Capacitor | 1 | Entre 10 uF y 100 uF, colocado cerca de VCC/GND del nRF24. |
+| Cables Dupont | 7 | Alimentacion, tierra, SPI, CE y CSN. |
 
 <p align="center">
   <img src="img/Cardputer/ADV-NRF.JPG" width="62%" alt="Cardputer ADV con nRF24L01+ externo">
@@ -91,10 +89,9 @@ se traduce a los cinco controles logicos que usaba el firmware original.
 
 ### Modulo RF recomendado
 
-El proyecto esta pensado para trabajar con **dos modulos nRF24L01+**. Para
-mejor estabilidad se recomienda usar modulos PA/LNA con antena externa,
-alimentacion regulada estable y un capacitor entre VCC y GND lo mas cerca
-posible de cada radio.
+El proyecto esta pensado para trabajar con un solo modulo **nRF24L01+**. Para
+mejor estabilidad se recomienda usar un modulo PA/LNA con antena externa y
+agregar un capacitor entre VCC y GND lo mas cerca posible del radio.
 
 <p align="center">
   <img src="img/componentes/NRF24.png" width="31%" alt="Modulo nRF24L01+">
@@ -102,38 +99,34 @@ posible de cada radio.
   <img src="img/componentes/Pines_NRF24.png" width="31%" alt="Pinout del modulo nRF24L01+">
 </p>
 
-## Conexion de los nRF24
+## Conexion del nRF24
 
-El firmware utiliza un bus SPI compartido y reserva lineas CE/CSN
-independientes para cada radio. El NRF1 conserva los pines ya probados y el
-NRF2 usa GPIO13/GPIO15.
+El firmware utiliza el bus SPI de la microSD y reserva GPIO5/GPIO6 para control
+de la radio.
 
-| Pin nRF24L01+ | NRF1 Cardputer ADV | NRF2 Cardputer ADV | Funcion |
-| --- | ---: | ---: | --- |
-| VCC | `3V3` regulado | `3V3` regulado | Alimentacion. No conectar directamente a 5 V. |
-| GND | `GND` | `GND` | Tierra comun. |
-| CE | `GPIO 5` | `GPIO 13` | Habilitacion de radio. |
-| CSN / CS | `GPIO 6` | `GPIO 15` | Seleccion SPI independiente. |
-| SCK | `GPIO 40` | `GPIO 40` | Reloj SPI compartido. |
-| MOSI | `GPIO 14` | `GPIO 14` | Datos Cardputer hacia nRF24. |
-| MISO | `GPIO 39` | `GPIO 39` | Datos nRF24 hacia Cardputer. |
-| IRQ | Sin conexion | Sin conexion | El firmware trabaja por consulta. |
+| Pin nRF24L01+ | Cardputer ADV | Funcion |
+| --- | ---: | --- |
+| VCC | `3V3` regulado | Alimentacion. No conectar directamente a 5 V. |
+| GND | `GND` | Tierra comun. |
+| CE | `GPIO 5` | Habilitacion de radio. |
+| CSN / CS | `GPIO 6` | Seleccion SPI del nRF24. |
+| SCK | `GPIO 40` | Reloj SPI compartido. |
+| MOSI | `GPIO 14` | Datos Cardputer hacia nRF24. |
+| MISO | `GPIO 39` | Datos nRF24 hacia Cardputer. |
+| IRQ | Sin conexion | El firmware trabaja por consulta. |
 
 Configuracion utilizada por el firmware:
 
 ```text
-SPI compartido: SCK=40  MISO=39  MOSI=14  SPI=10 MHz
-NRF1: CE=5   CSN=6
-NRF2: CE=13  CSN=15
+SCK=40  MISO=39  MOSI=14  CE=5  CSN=6  SPI=10 MHz
 ```
 
-> Usa alimentacion estable para ambos modulos. Los nRF24 PA/LNA pueden provocar
-> reinicios o lecturas `FAILED` si se alimentan con cables largos o sin
-> desacoplo. La pantalla `RF TOOLS -> NRF STATUS` permite verificar `NRF1: OK`
-> y `NRF2: OK` antes de usar las herramientas RF.
+> El bus se comparte con la microSD. Para las primeras pruebas se recomienda
+> retirar la tarjeta. Si ambos dispositivos se usan simultaneamente, cada uno
+> debe mantener su propia linea CS y permanecer deseleccionado cuando no se use.
 
 <p align="center">
-  <img src="img/Cardputer/conexiones1.JPG" width="42%" alt="Conexion de los nRF24 vista posterior">
+  <img src="img/Cardputer/conexiones1.JPG" width="42%" alt="Conexion del nRF24 vista posterior">
   <img src="img/Cardputer/conexiones2.JPG" width="42%" alt="Detalle de GPIO del Cardputer ADV">
 </p>
 
@@ -170,11 +163,10 @@ No es necesario mantener presionada la tecla `Fn`.
 | Analizador | Vista general de energia RF en 2.4 GHz. |
 | RF Heatmap | Historial visual de actividad por bandas. |
 | CH Advisor | Recomendacion de canales con menor actividad observada. |
-| NRF Status | Diagnostico rapido de conexion: `NRF1 OK/FAILED` y `NRF2 OK/FAILED`. |
 | nRF Link | Enlace maestro/esclavo entre dispositivos propios. |
 | nRF Chat | Mensajes de prueba mediante nRF24. |
 | BT/WiFi Coex | Comparacion visual de las zonas WiFi y BLE. |
-| Dual NRF Scope | Canales bajos y altos medidos con dos radios. |
+| NRF Scope | Canales bajos y altos medidos secuencialmente con una radio. |
 
 ### Bluetooth
 
@@ -301,8 +293,8 @@ M5Unified, RF24 y U8g2. La ultima compilacion validada ocupa aproximadamente
 | Plataforma | ESP32 DevKit / WROOM | M5Stack Cardputer ADV / ESP32-S3 |
 | Pantalla | OLED SSD1306 128x64 | TFT ST7789 240x135 |
 | Entrada | Cinco botones externos | Teclado fisico integrado |
-| Radio externa | Dos nRF24L01+ | Dos nRF24L01+ |
-| Herramientas duales | Muestreo simultaneo | Muestreo simultaneo con pines ADV |
+| Radio externa | Dos nRF24L01+ | Un nRF24L01+ |
+| Herramientas duales | Muestreo simultaneo | Muestreo secuencial bajo/alto |
 | Alimentacion | Bateria y regulacion externas | Bateria y carga integradas |
 | Montaje | PCB o protoboard personalizada | Plataforma comercial compacta |
 | Flasheo | ESP32 clasico | ESP32-S3 por USB/Web Serial |
@@ -314,9 +306,9 @@ La migracion conserva el entorno `esp32dev` para referencia, pero
 
 - El TFT muestra una interfaz compatible de 128x64 escalada a 240x120; no todas
   las pantallas aprovechan todavia color o resolucion nativa.
-- Las funciones RF duales requieren que `RF TOOLS -> NRF STATUS` muestre
-  `NRF1: OK` y `NRF2: OK`.
-- El SPI de los nRF24 es compartido; CE/CSN son independientes por modulo.
+- El unico nRF24 mide de forma secuencial las bandas que V4.0 observaba con dos
+  radios. Los resultados siguen siendo utiles, pero no son simultaneos.
+- El SPI del nRF24 comparte GPIO con la microSD.
 - El rendimiento RF depende de alimentacion estable, desacoplo, antena y
   longitud de los cables.
 - Web Serial requiere un navegador Chromium compatible y contexto HTTPS.
