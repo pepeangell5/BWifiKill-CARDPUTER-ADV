@@ -42,13 +42,17 @@ static void drawTotalActive() {
 
 void totalJammerSetup() {
     jam1.begin();
+#ifndef BWK_CARDPUTER_ADV
     jam2.begin();
+#endif
     jam1.setAutoAck(false);
     jam1.setDataRate(RF24_2MBPS);
     jam1.setCRCLength(RF24_CRC_DISABLED);
+#ifndef BWK_CARDPUTER_ADV
     jam2.setAutoAck(false);
     jam2.setDataRate(RF24_2MBPS);
     jam2.setCRCLength(RF24_CRC_DISABLED);
+#endif
 }
 
 void totalJammerLoop() {
@@ -56,10 +60,14 @@ void totalJammerLoop() {
         isTotalAttacking = !isTotalAttacking;
         if (!isTotalAttacking) {
             jam1.stopConstCarrier();
+#ifndef BWK_CARDPUTER_ADV
             jam2.stopConstCarrier();
+#endif
         } else {
             jam1.startConstCarrier(RF24_PA_MAX, 45);
+#ifndef BWK_CARDPUTER_ADV
             jam2.startConstCarrier(RF24_PA_MAX, 45);
+#endif
         }
         delay(400);
     }
@@ -67,7 +75,9 @@ void totalJammerLoop() {
     if (digitalRead(BTN_BACK) == LOW) {
         isTotalAttacking = false;
         jam1.stopConstCarrier();
+#ifndef BWK_CARDPUTER_ADV
         jam2.stopConstCarrier();
+#endif
         return;
     }
 
@@ -76,13 +86,17 @@ void totalJammerLoop() {
             for (int r = 0; r < 50; r++) {
                 for (int i = 0; i < total_chans; i++) {
                     jam1.setChannel(full_hop_list[i]);
+#ifndef BWK_CARDPUTER_ADV
                     jam2.setChannel(full_hop_list[total_chans - 1 - i]);
+#endif
                 }
 
                 if (digitalRead(BTN_OK) == LOW || digitalRead(BTN_BACK) == LOW) {
                     isTotalAttacking = false;
                     jam1.stopConstCarrier();
+#ifndef BWK_CARDPUTER_ADV
                     jam2.stopConstCarrier();
+#endif
                     return;
                 }
             }

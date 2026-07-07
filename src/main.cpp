@@ -83,7 +83,12 @@ int target_channel = 1;
 // Constructores literales — NO los reorganizamos para no romper el wiring
 U8G2_SSD1306_128X64_NONAME_F_HW_I2C u8g2(U8G2_R0, 22, 21);
 RF24 jam1(AppConfig::NRF1_CE, AppConfig::NRF1_CSN, AppConfig::NRF_SPI_HZ);
+#ifdef BWK_CARDPUTER_ADV
+// Compatibility handle: RF tools scan both bands sequentially on one radio.
+RF24 jam2(AppConfig::NRF1_CE, AppConfig::NRF1_CSN, AppConfig::NRF_SPI_HZ);
+#else
 RF24 jam2(AppConfig::NRF2_CE, AppConfig::NRF2_CSN, AppConfig::NRF_SPI_HZ);
+#endif
 
 AsyncWebServer asyncServer(AppConfig::WEB_PORT);
 
@@ -128,7 +133,7 @@ const char* menu_labels[] = {
     "DUAL NRF SCOPE",  // 28
     "DEAUTHER",        // 29
     "CONFIGURACION",   // 30
-    "NRF STATUS"       // 31
+    "NRF DIAG"         // 31
 };
 
 static void deautherLoop() {
@@ -177,7 +182,7 @@ static const App apps[] = {
     /* 28 */ { "DUAL NRF SCOPE",  dualNrfScopeEnter,  dualNrfScopeLoop,  dualNrfScopeExit },
     /* 29 */ { "DEAUTHER",        nullptr,            deautherLoop,      nullptr },
     /* 30 */ { "CONFIGURACION",   systemSettingsEnter, systemSettingsLoop, systemSettingsExit },
-    /* 31 */ { "NRF STATUS",      nrfDiagnosticEnter, nrfDiagnosticLoop, nrfDiagnosticExit },
+    /* 31 */ { "NRF DIAG",        nrfDiagnosticEnter, nrfDiagnosticLoop, nrfDiagnosticExit },
 };
 static const uint8_t APPS_COUNT = sizeof(apps) / sizeof(App);
 
@@ -197,7 +202,9 @@ static bool helpKeyPressed() {
 static void performBackCleanup() {
     esp_wifi_set_promiscuous(false);
     jam1.stopConstCarrier();
+#ifndef BWK_CARDPUTER_ADV
     jam2.stopConstCarrier();
+#endif
     if (menu_index == 16) asyncServer.end();
 
     bool keepWifiConnection = (menu_index == 0 && WiFi.status() == WL_CONNECTED);
@@ -227,9 +234,14 @@ void setup() {
         delay(35);
     }
 
+    // The Cardputer port waits for the external nRF24 wiring to be selected.
+#ifndef BWK_CARDPUTER_ADV
     jam1.begin();
     jam2.begin();
+#else
     Serial.println("[BWK] Cardputer input: UP/DOWN, ENTER, BACKSPACE, SPACE");
+    Serial.println("[BWK] nRF24 disabled until external pin mapping is configured");
+#endif
 }
 
 void loop() {

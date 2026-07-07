@@ -26,7 +26,9 @@ struct RadioDiag {
 };
 
 RadioDiag radio1;
+#ifndef BWK_CARDPUTER_ADV
 RadioDiag radio2;
+#endif
 uint32_t lastDrawMs = 0;
 
 const char* rateName(rf24_datarate_e rate) {
@@ -75,11 +77,15 @@ void runDiagnostics() {
     WiFi.mode(WIFI_OFF);
     jam1.stopConstCarrier();
     jam1.stopListening();
+#ifndef BWK_CARDPUTER_ADV
     jam2.stopConstCarrier();
     jam2.stopListening();
+#endif
 
     radio1 = testRadio(jam1);
+#ifndef BWK_CARDPUTER_ADV
     radio2 = testRadio(jam2);
+#endif
     lastDrawMs = 0;
 }
 
@@ -87,40 +93,36 @@ void drawStatusLine(int y, const char* label, const RadioDiag& diag) {
     char line[32];
     snprintf(line, sizeof(line), "%s %s CH%03u %s",
              label,
-             diag.chipOk ? "OK" : "FAILED",
+             diag.chipOk ? "OK" : (diag.beginOk ? "NOCHIP" : "BEGIN!"),
              diag.channel,
              rateName(diag.rate));
     u8g2.drawStr(4, y, line);
 }
 
-void drawBigStatus(int y, const char* label, const RadioDiag& diag) {
-    char line[24];
-    snprintf(line, sizeof(line), "%s: %s", label, diag.chipOk ? "OK" : "FAILED");
-    u8g2.drawStr(10, y, line);
-}
-
 void drawPins() {
     char line[32];
-    snprintf(line, sizeof(line), "1 CE%u CS%u 2 CE%u CS%u",
-             AppConfig::NRF1_CE, AppConfig::NRF1_CSN,
-             AppConfig::NRF2_CE, AppConfig::NRF2_CSN);
-    u8g2.drawStr(4, 48, line);
-    snprintf(line, sizeof(line), "SCK%u MI%u MO%u",
-             AppConfig::NRF_SPI_SCK, AppConfig::NRF_SPI_MISO, AppConfig::NRF_SPI_MOSI);
-    u8g2.drawStr(4, 56, line);
+    snprintf(line, sizeof(line), "CE%u CS%u SCK%u",
+             AppConfig::NRF1_CE, AppConfig::NRF1_CSN, AppConfig::NRF_SPI_SCK);
+    u8g2.drawStr(4, 42, line);
+    snprintf(line, sizeof(line), "MISO%u MOSI%u PA %s",
+             AppConfig::NRF_SPI_MISO, AppConfig::NRF_SPI_MOSI, paName(radio1.pa));
+    u8g2.drawStr(4, 50, line);
 }
 
 void drawDiagnostic() {
-    bool ok = radio1.beginOk && radio1.chipOk && radio2.beginOk && radio2.chipOk;
+    bool ok = radio1.beginOk && radio1.chipOk;
     u8g2.clearBuffer();
-    UiTheme::drawHeader(u8g2, "NRF STATUS", ok ? "OK" : "ERROR");
+    UiTheme::drawHeader(u8g2, "NRF DIAG", ok ? "OK" : "ERROR");
 
-    u8g2.setFont(u8g2_font_6x10_tr);
-    drawBigStatus(28, "NRF1", radio1);
-    drawBigStatus(39, "NRF2", radio2);
     u8g2.setFont(u8g2_font_5x7_tr);
+    drawStatusLine(25, "NRF1", radio1);
+#ifdef BWK_CARDPUTER_ADV
+    u8g2.drawStr(4, 34, "NRF2 N/A en Cardputer");
+#else
+    drawStatusLine(34, "NRF2", radio2);
+#endif
     drawPins();
-    u8g2.drawStr(4, 63, "OK retest  BACK salir");
+    u8g2.drawStr(4, 61, "OK retest  BACK salir");
     u8g2.sendBuffer();
 }
 
@@ -156,7 +158,9 @@ void nrfDiagnosticExit() {
     jam1.stopConstCarrier();
     jam1.stopListening();
     jam1.powerDown();
+#ifndef BWK_CARDPUTER_ADV
     jam2.stopConstCarrier();
     jam2.stopListening();
     jam2.powerDown();
+#endif
 }

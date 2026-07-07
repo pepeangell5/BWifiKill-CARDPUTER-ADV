@@ -33,17 +33,15 @@ namespace AppConfig {
     constexpr uint8_t  NRF_SPI_MOSI = 14;
     constexpr uint8_t  NRF1_CE      = 5;
     constexpr uint8_t  NRF1_CSN     = 6;
-    constexpr uint8_t  NRF2_CE      = 13;
-    constexpr uint8_t  NRF2_CSN     = 15;
 #else
     constexpr uint8_t  NRF_SPI_SCK  = 18;
     constexpr uint8_t  NRF_SPI_MISO = 19;
     constexpr uint8_t  NRF_SPI_MOSI = 23;
     constexpr uint8_t  NRF1_CE   = 5;
     constexpr uint8_t  NRF1_CSN  = 17;
+#endif
     constexpr uint8_t  NRF2_CE   = 16;
     constexpr uint8_t  NRF2_CSN  = 4;
-#endif
     constexpr uint32_t NRF_SPI_HZ = 10000000;
 
     // ---------- Firmware / Identidad ----------

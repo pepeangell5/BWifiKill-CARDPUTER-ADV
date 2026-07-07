@@ -14,7 +14,7 @@ static const uint8_t RF_APPS[] = {
     3,  // ANALIZADOR
     23, // RF HEATMAP
     24, // CH ADVISOR
-    31, // NRF STATUS
+    31, // NRF DIAG
     25, // NRF LINK
     26, // NRF CHAT
     27, // BT/WIFI COEX
