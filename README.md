@@ -343,7 +343,7 @@ indebido o consecuencias legales derivadas del proyecto.
 Desarrollado por **PepeAngell**.
 
 - GitHub: [pepeangell5](https://github.com/pepeangell5)
-- Instagram: [@esp32-tools](https://www.instagram.com/esp32-tools)
+- Instagram: [@esp32_tools](https://www.instagram.com/esp32_tools)
 - Facebook: [esp32tools](https://www.facebook.com/esp32tools)
 
 Distribuido bajo licencia MIT. Consulta [LICENSE](LICENSE).
